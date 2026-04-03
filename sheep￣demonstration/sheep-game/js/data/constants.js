@@ -10,17 +10,38 @@ export const GAME = {
   MAX_ENERGY:         3,
   HAND_SIZE:          5,
   STARTER_DECK_SIZE:  10,
-  MAX_STAGE:          3,   // ステージ数（最後がボス）
+  MAX_STAGE:          3,   // ステージ数（STAGESの長さと合わせる）
 };
 
-export const ENEMY = {
+export const ENEMIES = {
   WOLF: {
     id:      'wolf',
     name:    '野生の狼',
     maxHp:   50,
     attacks: [8,8,12,8,15],
   },
+
+  SLIME: {
+    id:      'slime',
+    name:    'スライム',
+    maxHp:   30,
+    attacks: [5, 5, 7],
+  },
+
+  BOSS: {
+    id:      'boss',
+    name:    '巨大オオカミ',
+    maxHp:   80,
+    attacks: [10, 15, 20, 10],
+  },
 };
+
+// ステージ定義（順番に進む）
+export const STAGES = [
+  { enemy: 'SLIME' },   // Stage 1
+  { enemy: 'WOLF'  },   // Stage 2
+  { enemy: 'BOSS'  },   // Stage 3（ボス）
+];
 
 export const SCREENS = {
   TITLE:   'title-screen',
