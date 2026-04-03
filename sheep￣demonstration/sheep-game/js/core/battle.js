@@ -121,16 +121,22 @@ export function executeCommands(commands, state) {
  * 手札のカードを使用する
  * @param {number} cardIndex - 手札のインデックス
  */
+// アニメーション中の二重実行を防ぐフラグ
+let isBusy = false;
+
 export async function useCard(cardIndex) {
+  if (isBusy) return;
   const state = getState();
   if (state.gameOver) return;
- 
+
   const card = state.hand[cardIndex];
   if (!card || state.energy < card.cost) return;
- 
+
+  isBusy = true;
+
   // 1. カード使用アニメをUIに通知
   callbacks.onCardPlayed({ cardIndex });
- 
+
   // 2. アニメが山を迎えるまで待つ
   await wait(ANIM.CARD_PLAY * 0.65);
  
@@ -160,6 +166,8 @@ export async function useCard(cardIndex) {
     state.gameOver = true;
     callbacks.onGameOver({ result });
   }
+
+  isBusy = false;
 }
  
 // ════════════════════════
