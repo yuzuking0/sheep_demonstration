@@ -8,7 +8,7 @@
 //   - UIは直接触らない
 // ============================================================
 
-import { GAME, ENEMY } from '../data/constants.js';
+import { GAME, ENEMIES, STAGES } from '../data/constants.js';
 import { buildStarterDeck } from '../data/cards.js';
 import { shuffle } from '../utils/helpers.js';
 
@@ -36,6 +36,16 @@ import { shuffle } from '../utils/helpers.js';
 let state = null;
 
 /**
+ * ステージ番号（1始まり）に対応する敵データを返す
+ */
+function getEnemyForStage(stage) {
+  const stageData = STAGES[stage - 1] ?? STAGES[STAGES.length - 1];
+  const enemyKey  = stageData.enemy;
+  const base      = ENEMIES[enemyKey];
+  return { ...base, hp: base.maxHp };
+}
+
+/**
  * ゲームを初期化して新しい状態を作る（ゲーム開始時に呼ぶ）
  */
 export function initState() {
@@ -51,7 +61,7 @@ export function initState() {
     hand:      [],
     discard:   [],
     passives:  [],
-    enemy:     { ...ENEMY.WOLF, hp: ENEMY.WOLF.maxHp },
+    enemy:     getEnemyForStage(1),
     turnIdx:   0,
     gameOver:  false,
     // ステージ管理
@@ -82,8 +92,8 @@ export function resetForNextBattle() {
   state.gameOver = false;
   state.passives = [];
 
-  // 敵をリセット（今は全ステージ同じ敵）
-  state.enemy = { ...ENEMY.WOLF, hp: ENEMY.WOLF.maxHp };
+  // 次のステージの敵をセット
+  state.enemy = getEnemyForStage(state.stage);
 }
 
 /**
