@@ -288,9 +288,15 @@
    報酬画面
 ════════════════════════ */
 #reward-screen {
-  display: none; position: fixed; inset: 0; z-index: 90;
+  display: none; 
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 90;
   align-items: center; justify-content: center; flex-direction: column; gap: 20px;
-  background: #000000ee;
+  background: #000000ee;  
 }
 .reward-header { text-align:center; animation:rSlide .4s cubic-bezier(.22,1,.36,1) both; }
 @keyframes rSlide { from{transform:translateY(-25px);opacity:0} to{transform:translateY(0);opacity:1} }
@@ -472,6 +478,7 @@
       <button class="btn-ghost" onclick="Game.retry()">RESTART</button>
     </div>
   </div>
+</div>
 
 
 
