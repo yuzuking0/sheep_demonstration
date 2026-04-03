@@ -7,15 +7,15 @@
 //   - battle.js の関数を呼ぶ（処理は任せる）
 //   - UIフィードバックはui.jsに任せる
 // ============================================================
-
+ 
 import { useCard, finishTurn } from '../core/battle.js';
 import { getState } from '../core/game-state.js';
 import { setFocus, getFocusedIdx, applyFocus } from './ui.js';
-
+ 
 // ════════════════════════
 // 初期化
 // ════════════════════════
-
+ 
 /**
  * 全イベントを登録する（main.jsから呼ぶ）
  */
@@ -24,17 +24,17 @@ export function initEvents() {
   document.getElementById('btn-end-turn')?.addEventListener('click', () => {
     finishTurn();
   });
-
+ 
   // 手札エリアのスワイプ
   const handArea = document.getElementById('hand');
   if (handArea) setupHandSwipe(handArea);
 }
-
+ 
 // ════════════════════════
 // カードのイベント登録
 // （renderHand後に各カード要素に対して呼ぶ）
 // ════════════════════════
-
+ 
 /**
  * 手札カードにイベントを登録する
  */
@@ -42,17 +42,17 @@ export function attachCardEvents(cardElement, cardIndex, baseTransform, baseAngl
   const state = getState();
   const card  = state.hand[cardIndex];
   if (!card || state.energy < card.cost) return;
-
+ 
   // PC: ホバーでフォーカス
   cardElement.addEventListener('mouseenter', () => setFocus(cardIndex));
   cardElement.addEventListener('mouseleave', () => setFocus(-1));
-
+ 
   // クリック
   cardElement.addEventListener('click', () => {
     if (getFocusedIdx() === cardIndex) useCard(cardIndex);
     else setFocus(cardIndex);
   });
-
+ 
   // ダブルタップで即発動
   let lastTap = 0;
   cardElement.addEventListener('touchend', e => {
@@ -66,19 +66,19 @@ export function attachCardEvents(cardElement, cardIndex, baseTransform, baseAngl
     }
     lastTap = now;
   }, { passive: false });
-
+ 
   // 上スワイプで発動
   setupCardSwipe(cardElement, cardIndex, baseTransform, baseAngle);
 }
-
+ 
 // ════════════════════════
 // カード個別スワイプ
 // ════════════════════════
-
+ 
 function setupCardSwipe(el, idx, baseTransform, baseAngle) {
   let startY = null, startX = null, dragging = false;
   const THRESHOLD = 65;
-
+ 
   function onStart(e) {
     if (getState().gameOver) return;
     const pt = e.touches ? e.touches[0] : e;
@@ -87,7 +87,7 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
     document.getElementById('swipe-zone')?.classList.add('active');
     e.preventDefault();
   }
-
+ 
   function onMove(e) {
     if (!dragging) return;
     const pt = e.touches ? e.touches[0] : e;
@@ -101,7 +101,7 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
     }
     e.preventDefault();
   }
-
+ 
   function onEnd(e) {
     if (!dragging) return;
     dragging = false;
@@ -110,7 +110,7 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
     const dy = pt.clientY - startY;
     el.style.filter = '';
     el.style.zIndex = idx + 1;
-
+ 
     if (dy < -THRESHOLD) {
       useCard(idx);
     } else {
@@ -118,7 +118,7 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
     }
     startY = null;
   }
-
+ 
   el.addEventListener('touchstart', onStart, { passive: false });
   el.addEventListener('touchmove',  onMove,  { passive: false });
   el.addEventListener('touchend',   onEnd);
@@ -126,30 +126,30 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
   window.addEventListener('mousemove', e => { if (dragging) onMove(e); });
   window.addEventListener('mouseup',   e => { if (dragging) onEnd(e); });
 }
-
+ 
 // ════════════════════════
 // 手札エリア全体スワイプ
 // （横スワイプでフォーカス移動、縦スワイプで発動）
 // ════════════════════════
-
+ 
 function setupHandSwipe(area) {
   let startX = null, startY = null, active = false;
   const H_THRESH = 30;
   const V_THRESH = 65;
-
+ 
   area.addEventListener('touchstart', e => {
     if (getState().gameOver) return;
     const pt = e.touches[0];
     startX = pt.clientX; startY = pt.clientY; active = true;
   }, { passive: true });
-
+ 
   area.addEventListener('touchmove', e => {
     if (!active || startX === null) return;
     const pt = e.touches[0];
     const dx = pt.clientX - startX;
     const dy = pt.clientY - startY;
     const fi = getFocusedIdx();
-
+ 
     // 縦スワイプ中：フォーカス中カードを追従
     if (fi >= 0 && Math.abs(dy) > Math.abs(dx) && dy < 0) {
       const cards = area.querySelectorAll('.card');
@@ -161,7 +161,7 @@ function setupHandSwipe(area) {
       }
     }
   }, { passive: false });
-
+ 
   area.addEventListener('touchend', e => {
     if (!active || startX === null) return;
     active = false;
@@ -170,7 +170,7 @@ function setupHandSwipe(area) {
     const dy = pt.clientY - startY;
     const n  = getState().hand.length;
     const fi = getFocusedIdx();
-
+ 
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > H_THRESH) {
       // 横スワイプ：フォーカス移動
       const dir    = dx < 0 ? 1 : -1;
@@ -183,14 +183,15 @@ function setupHandSwipe(area) {
         if (state.energy >= state.hand[t].cost) { target = t; break; }
       }
       setFocus(target);
-
+ 
     } else if (Math.abs(dy) > Math.abs(dx) && dy < -V_THRESH && fi >= 0) {
       // 縦スワイプ：発動
       useCard(fi);
     } else {
       applyFocus();
     }
-
+ 
     startX = null; startY = null;
   }, { passive: true });
 }
+ 
