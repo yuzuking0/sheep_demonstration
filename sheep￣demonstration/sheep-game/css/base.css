@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&display=swap');
+
+/* ════════════════════════
+   デザイントークン
+════════════════════════ */
+:root {
+  --gold:   #c9962a;
+  --gold2:  #f0c060;
+  --gold3:  #ffe099;
+  --parch:  #f5e6c8;
+  --parch2: #d4b882;
+  --parch3: #a08050;
+  --red3:   #e74c3c;
+  --green:  #2d5a1b;
+  --green3: #7bc950;
+  --blue3:  #74b9ff;
+  --ink:    #1a0f05;
+
+  --font-display: 'Cinzel Decorative', serif;
+  --font-title:   'Cinzel', serif;
+  --font-body:    'Noto Serif JP', serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-body);
+  background: #0a0805;
+}
+
+/* ════════════════════════
+   共通アニメーション
+════════════════════════ */
+@keyframes shake {
+  0%,100% { transform: translateX(0) rotate(0); }
+  15%     { transform: translateX(-10px) rotate(-2deg); }
+  30%     { transform: translateX(10px)  rotate(2deg); }
+  60%     { transform: translateX(-5px); }
+  80%     { transform: translateX(5px); }
+}
+.shake { animation: shake .4s ease; }
+
+/* ════════════════════════
+   共通ボタン
+════════════════════════ */
+.btn-gold {
+  font-family: var(--font-title);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--gold3), var(--gold2), var(--gold));
+  border: none;
+  padding: 10px 32px;
+  clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0% 50%);
+  cursor: pointer;
+  transition: all .15s;
+  animation: btnPulse 2.5s ease-in-out infinite alternate;
+}
+.btn-gold:hover {
+  background: linear-gradient(180deg, #fff8cc, var(--gold3), var(--gold2));
+  transform: scale(1.04);
+}
+@keyframes btnPulse {
+  from { box-shadow: 0 4px 14px #c9962a33; }
+  to   { box-shadow: 0 4px 22px #c9962a77; }
+}
+
+.btn-ghost {
+  font-family: var(--font-title);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--parch3);
+  background: transparent;
+  border: 1px solid #c9962a33;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold2); }

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>羊インフレーション</title>
+
+<!-- CSS -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/background.css">
+<link rel="stylesheet" href="css/card.css">
+
+<style>
+/* ════════════════════════
+   戦闘画面レイアウト
+════════════════════════ */
+#battle-screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  padding: 10px 12px 8px; gap: 8px;
+}
+
+/* トップバー */
+#top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 12px;
+  background: linear-gradient(90deg,#0e0b07cc,#1a1208cc,#0e0b07cc);
+  border: 1px solid #c9962a33; border-radius: 7px; flex-shrink: 0;
+}
+.stat { display: flex; align-items: center; gap: 6px; }
+.stat-label { font-family: var(--font-title); font-size: 8px; color: var(--parch3); letter-spacing: 1px; opacity: .7; }
+.stat-value { font-family: var(--font-display); font-size: 19px; line-height: 1; }
+.stat-value.sheep  { color: var(--green3); text-shadow: 0 0 10px #7bc95055; }
+.stat-value.energy { color: var(--blue3);  text-shadow: 0 0 10px #74b9ff55; }
+.stat-value.turn   { color: var(--gold2);  text-shadow: 0 0 10px #f0c06055; }
+.stat-divider { width: 1px; height: 26px; background: linear-gradient(180deg,transparent,#c9962a44,transparent); }
+.hp-wrap { flex: 1; max-width: 190px; margin: 0 8px; }
+.hp-label { display: flex; justify-content: space-between; font-family: var(--font-title); font-size: 8px; color: var(--parch2); letter-spacing: 1px; margin-bottom: 3px; font-weight: 600; }
+.hp-track { height: 11px; background: #1a0808; border: 1px solid #c9962a44; border-radius: 3px; overflow: hidden; }
+#sheep-hp-fill { height: 100%; background: linear-gradient(90deg,var(--green),var(--green3)); border-radius: 3px; transition: width .3s ease, background .3s ease; }
+
+/* 敵エリア */
+#enemy-area { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; min-height: 0; }
+#enemy-container { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; }
+.enemy-name { font-family: var(--font-title); font-size: 14px; font-weight: 700; color: var(--parch); letter-spacing: 3px; text-shadow: 0 0 16px #ff000055; }
+
+/* 狼 */
+#wolf { position: relative; width: 130px; height: 140px; animation: wolfBreathe 3s ease-in-out infinite alternate; filter: drop-shadow(0 8px 20px #00000088); }
+@keyframes wolfBreathe { from{transform:translateY(0)} to{transform:translateY(-5px)} }
+#wolf::after { content:''; position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:80px; height:14px; background:rgba(0,0,0,.4); border-radius:50%; filter:blur(5px); }
+.wbd{position:absolute;bottom:28px;left:16px;width:84px;height:60px;background:linear-gradient(135deg,#6b6b6b,#3a3a3a);border-radius:18px 24px 8px 8px;box-shadow:inset -6px -6px 12px rgba(0,0,0,.3);}
+.wbl{position:absolute;bottom:30px;left:30px;width:46px;height:38px;background:linear-gradient(180deg,#8a8a8a,#6a6a6a);border-radius:50% 40% 30% 30%;opacity:.4;}
+.whd{position:absolute;bottom:78px;left:48px;width:62px;height:54px;background:linear-gradient(135deg,#6b6b6b,#3a3a3a);border-radius:14px 16px 8px 8px;box-shadow:inset -4px -4px 8px rgba(0,0,0,.3);}
+.wmz{position:absolute;bottom:78px;left:88px;width:32px;height:28px;background:linear-gradient(135deg,#7a7a7a,#5a5a5a);border-radius:8px 10px 8px 8px;}
+.wns{position:absolute;bottom:102px;left:108px;width:13px;height:8px;background:#1a1a1a;border-radius:4px;}
+.wfg{position:absolute;width:7px;height:11px;background:#f0f0f0;clip-path:polygon(20% 0%,80% 0%,50% 100%);}
+.wf1{bottom:82px;left:94px}.wf2{bottom:82px;left:106px}
+.wey{position:absolute;width:13px;height:11px;background:radial-gradient(circle at 40% 40%,#ff6666,#cc0000);border-radius:40% 40% 50% 50%;box-shadow:0 0 8px #ff0000,0 0 16px #ff000066;animation:eyeP 1.5s ease-in-out infinite alternate;}
+.we1{bottom:118px;left:52px}.we2{bottom:118px;left:72px}
+@keyframes eyeP{from{box-shadow:0 0 6px #ff0000,0 0 12px #ff000066}to{box-shadow:0 0 12px #ff4444,0 0 24px #ff000099}}
+.wpu{position:absolute;width:5px;height:8px;background:#0a0000;border-radius:50%;top:1px;left:4px;}
+.wer{position:absolute;width:20px;height:28px;clip-path:polygon(15% 100%,85% 100%,50% 0%);}
+.wr1{background:linear-gradient(180deg,#555,#3a3a3a);bottom:122px;left:50px;transform:rotate(-10deg);}
+.wr2{background:linear-gradient(180deg,#555,#3a3a3a);bottom:122px;left:76px;transform:rotate(10deg);}
+.win{position:absolute;width:10px;height:16px;background:#ff9999;clip-path:polygon(15% 100%,85% 100%,50% 0%);opacity:.55;}
+.wi1{bottom:124px;left:54px;transform:rotate(-10deg)}.wi2{bottom:124px;left:80px;transform:rotate(10deg)}
+.wtl{position:absolute;bottom:34px;left:4px;width:24px;height:42px;background:linear-gradient(180deg,#6b6b6b,#4a4a4a);border-radius:12px 4px 4px 12px;transform:rotate(-22deg);transform-origin:right bottom;}
+.wlg{position:absolute;width:15px;height:30px;background:linear-gradient(180deg,#5a5a5a,#3a3a3a);border-radius:4px 4px 6px 6px;bottom:2px;}
+.wlg::after{content:'';position:absolute;bottom:-4px;left:0;width:15px;height:6px;background:#2a2a2a;border-radius:0 0 6px 6px;}
+.wl1{left:22px}.wl2{left:38px}.wl3{left:68px}.wl4{left:82px}
+
+/* 敵HPバー */
+.enemy-hp-wrap { width:220px; display:flex; flex-direction:column; gap:4px; }
+.enemy-hp-label { display:flex; justify-content:space-between; font-family:var(--font-title); font-size:10px; color:var(--parch2); letter-spacing:1px; font-weight:600; }
+.enemy-hp-track { height:16px; background:#1a0808; border:1px solid #9b233577; border-radius:3px; overflow:hidden; position:relative; box-shadow:inset 0 2px 6px rgba(0,0,0,.6); }
+#enemy-hp-ghost { position:absolute; top:0; left:0; height:100%; background:#ff6b6b33; pointer-events:none; transition:width .8s ease .2s; }
+#enemy-hp-fill  { height:100%; background:linear-gradient(90deg,#7b1a1a,#c0392b 50%,#e74c3c); border-radius:3px; position:relative; transition:width .35s cubic-bezier(.22,1,.36,1); }
+#enemy-hp-fill::after { content:''; position:absolute; top:0; left:0; right:0; height:45%; background:rgba(255,255,255,.12); }
+
+/* 攻撃予告 */
+.intent { display:flex; align-items:center; gap:8px; background:linear-gradient(90deg,#1a0808cc,#2a0e0ecc,#1a0808cc); border:1px solid #9b233544; border-radius:4px; padding:6px 14px; }
+.intent-icon { font-size:16px; filter:drop-shadow(0 0 4px #ff000066); animation:iRock 2s ease-in-out infinite; }
+@keyframes iRock { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-8deg)} 75%{transform:rotate(8deg)} }
+.intent-text { font-family:var(--font-title); font-size:10px; color:var(--parch); letter-spacing:1px; }
+.intent-dmg  { font-family:var(--font-display); font-size:20px; color:var(--red3); text-shadow:0 0 10px #ff000066; margin-left:4px; }
+
+/* 手札エリア */
+#hand-area { flex-shrink:0; display:flex; flex-direction:column; gap:6px; }
+#hand-row  { display:flex; align-items:flex-end; gap:8px; }
+.pile { background:linear-gradient(180deg,#1a1208cc,#0e0b07cc); border:1px solid #c9962a33; border-radius:6px; padding:6px 8px; text-align:center; min-width:46px; flex-shrink:0; }
+.pile-count { font-family:var(--font-display); font-size:18px; color:var(--parch3); line-height:1; }
+.pile-label { font-family:var(--font-title); font-size:7px; color:var(--parch3); opacity:.5; letter-spacing:1px; margin-top:2px; }
+#hand { flex:1; position:relative; height:170px; overflow:visible; }
+#btn-row { display:flex; justify-content:center; gap:10px; }
+
+/* エフェクト */
+@keyframes wolfHit { 0%,100%{filter:drop-shadow(0 8px 20px #00000088)} 25%{filter:brightness(3) saturate(0) drop-shadow(0 0 20px #ff0000)} 50%{filter:brightness(2) sepia(.8) drop-shadow(0 0 12px #ff4444)} }
+#wolf.hit { animation: wolfHit .35s ease forwards; }
+.enemy-flash { position:absolute; inset:0; background:radial-gradient(ellipse at 50%,#ff000055,transparent 70%); pointer-events:none; z-index:5; animation:eFlash .35s ease forwards; }
+@keyframes eFlash { 0%,100%{opacity:0} 30%{opacity:1} }
+.player-flash { position:fixed; inset:0; background:linear-gradient(180deg,transparent 60%,#ff000033 100%); pointer-events:none; z-index:45; animation:pFlash .4s ease forwards; }
+@keyframes pFlash { 0%,100%{opacity:0} 25%{opacity:1} }
+.damage-popup { position:absolute; font-family:var(--font-display); font-size:30px; font-weight:900; pointer-events:none; z-index:50; animation:dmgFloat .85s cubic-bezier(.22,1,.36,1) forwards; }
+.damage-popup.enemy  { color:#fff; text-shadow:0 0 8px #ff0000,0 0 20px #ff000088,2px 2px 0 #880000; }
+.damage-popup.player { color:#fff; text-shadow:0 0 8px #ff6600,0 0 20px #ff660088,2px 2px 0 #883300; }
+@keyframes dmgFloat { 0%{transform:translateY(0) scale(1.3);opacity:1} 30%{transform:translateY(-28px);opacity:1} 100%{transform:translateY(-75px) scale(.8);opacity:0} }
+.play-flash { position:fixed; inset:0; background:radial-gradient(ellipse at 50% 60%,#c9962a14,transparent 65%); pointer-events:none; z-index:40; animation:pfFade .5s ease forwards; }
+@keyframes pfFade { from{opacity:1} to{opacity:0} }
+
+/* スワイプゾーン */
+#swipe-zone { position:fixed; top:0; left:0; right:0; height:55%; z-index:25; pointer-events:none; }
+#swipe-zone.active { pointer-events:all; }
+
+/* ════════════════════════
+   タイトル画面
+════════════════════════ */
+#title-screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 0;
+}
+
+.title-frame { position:relative; padding:40px 60px 36px; text-align:center; }
+.title-frame::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg,#0e0b0788,#1a120888); border-top:1px solid #c9962a66; border-bottom:1px solid #c9962a66; }
+.main-title {
+  position:relative; z-index:1;
+  font-family: var(--font-display); font-weight:900;
+  font-size: clamp(24px,5vw,48px);
+  background: linear-gradient(180deg,var(--gold3),var(--gold2) 40%,var(--gold) 70%,#8a6010);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: 3px; line-height: 1.2; filter: drop-shadow(0 2px 12px #c9962a88);
+}
+.sub-title { position:relative; z-index:1; font-family:var(--font-title); font-size:11px; color:var(--parch2); letter-spacing:8px; opacity:.6; margin-top:6px; }
+.title-ornament { display:flex; align-items:center; justify-content:center; gap:12px; margin:10px 0; position:relative; z-index:1; }
+.orn-line  { height:1px; width:60px; background:linear-gradient(90deg,transparent,var(--gold)); }
+.orn-liner { height:1px; width:60px; background:linear-gradient(90deg,var(--gold),transparent); }
+.orn-gem   { width:6px; height:6px; background:var(--gold2); transform:rotate(45deg); box-shadow:0 0 6px var(--gold); }
+
+.start-btn-wrap { position:relative; z-index:1; margin-top:28px; }
+.start-btn {
+  font-family: var(--font-title); font-size:14px; font-weight:700; letter-spacing:4px;
+  color: var(--ink);
+  background: linear-gradient(180deg,var(--gold3),var(--gold2),var(--gold));
+  border:none; padding:14px 48px; cursor:pointer;
+  clip-path: polygon(8px 0%,calc(100% - 8px) 0%,100% 50%,calc(100% - 8px) 100%,8px 100%,0% 50%);
+  transition: all .2s;
+  animation: startPulse 2s ease-in-out infinite alternate;
+}
+.start-btn:hover { background:linear-gradient(180deg,#fff8cc,var(--gold3),var(--gold2)); transform:scale(1.05); }
+@keyframes startPulse { from{box-shadow:0 4px 16px #c9962a44} to{box-shadow:0 4px 28px #c9962a88,0 0 40px #c9962a33} }
+
+/* タイトル背景・羊 */
+.sheep-walker { position:absolute; bottom:17%; animation:sheepWalk linear infinite; }
+@keyframes sheepWalk { from{transform:translateX(-120px)} to{transform:translateX(110vw)} }
+.sw { position:relative; width:52px; height:40px; }
+.sww { position:absolute; background:radial-gradient(circle at 35% 35%,#fff,#ddd); border-radius:50%; }
+.sww1{width:30px;height:26px;bottom:10px;left:8px}
+.sww2{width:18px;height:18px;bottom:22px;left:6px}
+.sww3{width:20px;height:20px;bottom:24px;left:18px}
+.sww4{width:16px;height:16px;bottom:22px;left:34px}
+.sw-face{position:absolute;bottom:14px;left:38px;width:14px;height:12px;background:#e8e0d0;border-radius:4px 5px 3px 3px;}
+.sw-eye{position:absolute;width:3px;height:3px;background:#1a0a00;border-radius:50%;bottom:20px;left:42px;}
+.sw-legs{position:absolute;bottom:0;left:10px;display:flex;gap:5px;}
+.sw-leg{width:5px;height:12px;background:#888;border-radius:0 0 3px 3px;transform-origin:top center;}
+.sw-leg:nth-child(1){animation:legSwing .6s ease-in-out infinite alternate;}
+.sw-leg:nth-child(2){animation:legSwing .6s ease-in-out infinite alternate-reverse;}
+.sw-leg:nth-child(3){animation:legSwing .6s ease-in-out infinite alternate-reverse;}
+.sw-leg:nth-child(4){animation:legSwing .6s ease-in-out infinite alternate;}
+@keyframes legSwing{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+
+/* ════════════════════════
+   報酬画面
+════════════════════════ */
+#reward-screen {
+  display: none; position: fixed; inset: 0; z-index: 90;
+  align-items: center; justify-content: center; flex-direction: column; gap: 20px;
+  background: #000000ee;
+}
+.reward-header { text-align:center; animation:rSlide .4s cubic-bezier(.22,1,.36,1) both; }
+@keyframes rSlide { from{transform:translateY(-25px);opacity:0} to{transform:translateY(0);opacity:1} }
+.reward-title { font-family:var(--font-display); font-size:20px; background:linear-gradient(180deg,var(--gold3),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 2px 8px #c9962a66); letter-spacing:3px; }
+.reward-sub   { font-family:var(--font-title); font-size:10px; color:var(--parch3); letter-spacing:4px; opacity:.6; margin-top:4px; }
+.reward-orn   { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:6px; }
+#reward-cards { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; padding:0 12px; }
+
+/* ════════════════════════
+   ゲームオーバーオーバーレイ
+════════════════════════ */
+#overlay { display:none; position:fixed; inset:0; background:#000000cc; z-index:100; align-items:center; justify-content:center; }
+#overlay.show { display:flex; }
+.ov-box { background:linear-gradient(180deg,#1a1208,#0e0b07); border:1px solid var(--gold); border-radius:12px; padding:32px 48px; text-align:center; box-shadow:0 0 60px #c9962a33; }
+.ov-title { font-family:var(--font-display); font-size:38px; margin-bottom:8px; }
+.ov-title.win  { color:var(--green3); text-shadow:0 0 20px #7bc95088; }
+.ov-title.lose { color:var(--red3);   text-shadow:0 0 20px #ff000088; }
+.ov-line { height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:12px 0; }
+.ov-sub  { font-family:var(--font-title); font-size:12px; color:var(--parch3); letter-spacing:2px; margin-bottom:20px; }
+</style>
+</head>
+<body>
+
+<!-- スワイプゾーン -->
+<div id="swipe-zone"></div>
+
+<!-- 共通背景 -->
+<div id="bg"></div>
+<div id="bg-stars"></div>
+<div id="bg-moon"></div>
+<div id="bg-clouds"></div>
+<div id="bg-hills">
+  <div class="bg-hill bh1"></div>
+  <div class="bg-hill bh2"></div>
+  <div class="bg-hill bh3"></div>
+  <div class="bg-hill bh4"></div>
+  <div class="bg-ground"></div>
+</div>
+
+<!-- ════════════════════════
+     タイトル画面
+════════════════════════ -->
+<div id="title-screen">
+  <!-- 羊が歩く -->
+  <div id="sheep-walkers"></div>
+
+  <!-- タイトル -->
+  <div class="title-frame">
+    <div class="title-ornament">
+      <div class="orn-line"></div>
+      <div class="orn-gem"></div>
+      <div class="orn-gem" style="opacity:.5;transform:rotate(45deg) scale(.7)"></div>
+      <div class="orn-gem"></div>
+      <div class="orn-liner"></div>
+    </div>
+    <div class="main-title">羊インフレーション</div>
+    <div class="sub-title">SHEEP INFLATION</div>
+    <div class="title-ornament" style="margin-top:10px">
+      <div class="orn-line"></div>
+      <div class="orn-gem" style="opacity:.5;transform:rotate(45deg) scale(.7)"></div>
+      <div class="orn-gem"></div>
+      <div class="orn-gem" style="opacity:.5;transform:rotate(45deg) scale(.7)"></div>
+      <div class="orn-liner"></div>
+    </div>
+  </div>
+
+  <div class="start-btn-wrap">
+    <button class="start-btn" onclick="Game.startGame()">GAME  START</button>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     戦闘画面
+════════════════════════ -->
+<div id="battle-screen">
+
+  <!-- トップバー -->
+  <div id="top-bar">
+    <div class="stat">
+      <div class="stat-label">SHEEP</div>
+      <div class="stat-value sheep" id="sheep-val">20</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="hp-wrap">
+      <div class="hp-label"><span>HP</span><span id="hp-nums">20 / 20</span></div>
+      <div class="hp-track"><div id="sheep-hp-fill" style="width:100%"></div></div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-label">ENERGY</div>
+      <div class="stat-value energy" id="energy-val">3/3</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-label">TURN</div>
+      <div class="stat-value turn" id="turn-val">1</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-value" id="stage-label" style="font-size:11px;color:var(--gold2)">STAGE 1 / 3</div>
+    </div>
+  </div>
+
+  <!-- 敵エリア -->
+  <div id="enemy-area">
+    <div id="enemy-container">
+      <div class="enemy-name">野生の狼</div>
+      <div id="wolf">
+        <div class="wtl"></div><div class="wbd"></div><div class="wbl"></div>
+        <div class="whd"></div><div class="wmz"></div><div class="wns"></div>
+        <div class="wfg wf1"></div><div class="wfg wf2"></div>
+        <div class="wer wr1"></div><div class="wer wr2"></div>
+        <div class="win wi1"></div><div class="win wi2"></div>
+        <div class="wey we1"><div class="wpu"></div></div>
+        <div class="wey we2"><div class="wpu"></div></div>
+        <div class="wlg wl1"></div><div class="wlg wl2"></div>
+        <div class="wlg wl3"></div><div class="wlg wl4"></div>
+      </div>
+      <div class="enemy-hp-wrap">
+        <div class="enemy-hp-label">
+          <span>HEALTH</span><span id="enemy-hp-nums">50 / 50</span>
+        </div>
+        <div class="enemy-hp-track">
+          <div id="enemy-hp-ghost" style="width:100%"></div>
+          <div id="enemy-hp-fill"  style="width:100%"></div>
+        </div>
+      </div>
+      <div class="intent">
+        <div class="intent-icon">⚔️</div>
+        <div class="intent-text">牙の一撃</div>
+        <div class="intent-dmg" id="intent-dmg">8</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 手札 -->
+  <div id="hand-area">
+    <div id="hand-row">
+      <div class="pile">
+        <div class="pile-count" id="deck-count">10</div>
+        <div class="pile-label">山札</div>
+      </div>
+      <div id="hand"></div>
+      <div class="pile">
+        <div class="pile-count" id="discard-count">0</div>
+        <div class="pile-label">捨て札</div>
+      </div>
+    </div>
+    <div id="btn-row">
+      <button class="btn-gold" id="btn-end-turn" onclick="Game.finishTurn()">TURN END</button>
+      <button class="btn-ghost" onclick="Game.retry()">RESTART</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════
+     クリア画面
+════════════════════════ -->
+<div id="clear-screen" style="display:none;position:fixed;inset:0;z-index:90;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:#000000ee;">
+  <div style="text-align:center;animation:rSlide .5s cubic-bezier(.22,1,.36,1) both">
+    <div style="font-family:var(--font-display);font-size:32px;background:linear-gradient(180deg,var(--gold3),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 12px #c9962a88);letter-spacing:3px;margin-bottom:8px">
+      🎉 CLEAR!
+    </div>
+    <div style="font-family:var(--font-title);font-size:12px;color:var(--parch3);letter-spacing:3px;margin-bottom:4px">
+      全ステージ制覇！
+    </div>
+    <div style="font-family:var(--font-title);font-size:11px;color:var(--parch3);letter-spacing:2px;opacity:.7" id="clear-sheep"></div>
+  </div>
+  <div style="height:1px;width:200px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
+  <button class="btn-gold" onclick="Game.retry()" style="clip-path:none;border-radius:6px">もう一度プレイ</button>
+</div>
+
+<!-- ════════════════════════
+     報酬画面
+════════════════════════ -->
+<div id="reward-screen">
+  <div class="reward-header">
+    <div class="reward-title">CHOOSE A CARD</div>
+    <div class="reward-sub">カードを1枚選択</div>
+    <div class="reward-orn">
+      <div class="orn-line"></div>
+      <div class="orn-gem"></div>
+      <div class="orn-gem" style="opacity:.5;transform:rotate(45deg) scale(.7)"></div>
+      <div class="orn-gem"></div>
+      <div class="orn-liner"></div>
+    </div>
+  </div>
+  <div id="reward-cards"></div>
+  <button class="btn-ghost" onclick="Game.skipReward()">SKIP</button>
+</div>
+
+<!-- ゲームオーバーオーバーレイ -->
+<div id="overlay">
+  <div class="ov-box">
+    <div class="ov-title" id="ov-title"></div>
+    <div class="ov-line"></div>
+    <div class="ov-sub"   id="ov-sub"></div>
+    <button class="btn-gold" onclick="Game.retry()" style="clip-path:none;border-radius:6px">RETRY</button>
+  </div>
+</div>
+
+<!-- JS（ESモジュール） -->
+<script type="module" src="js/main.js"></script>
+
+<!-- タイトル背景の羊を生成 -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 星
+  const stars = document.getElementById('bg-stars');
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'bg-star';
+    const sz = Math.random() * 1.8 + 0.4;
+    el.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*55}%;--mo:${(Math.random()*.3+.1).toFixed(2)};--d:${(Math.random()*3+2).toFixed(1)}s;animation-delay:${(Math.random()*4).toFixed(1)}s`;
+    stars.appendChild(el);
+  }
+
+  // 雲
+  const clouds = document.getElementById('bg-clouds');
+  [{t:'8%',sc:1.2,d:100,dl:0},{t:'15%',sc:.8,d:75,dl:-25},{t:'5%',sc:1.5,d:120,dl:-50}].forEach(o => {
+    const el = document.createElement('div');
+    el.className = 'bg-cloud';
+    el.style.cssText = `top:${o.t};transform:scale(${o.sc});animation-duration:${o.d}s;animation-delay:${o.dl}s`;
+    el.innerHTML = `<div style="position:relative;width:80px;height:24px;background:#c8b090;border-radius:40px"><div style="position:absolute;width:32px;height:32px;background:#c8b090;border-radius:50%;top:-14px;left:8px"></div><div style="position:absolute;width:26px;height:26px;background:#c8b090;border-radius:50%;top:-11px;left:32px"></div></div>`;
+    clouds.appendChild(el);
+  });
+
+  // タイトル画面の羊
+  const walkers = document.getElementById('sheep-walkers');
+  if (walkers) {
+    [{dur:22,delay:0,scale:.9},{dur:30,delay:-8,scale:.7},{dur:18,delay:-14,scale:1},{dur:26,delay:-5,scale:.8}]
+    .forEach(cfg => {
+      const w = document.createElement('div');
+      w.className = 'sheep-walker';
+      w.style.cssText = `bottom:17%;transform:scale(${cfg.scale});transform-origin:bottom left;animation-duration:${cfg.dur}s;animation-delay:${cfg.delay}s`;
+      w.innerHTML = `<div class="sw"><div class="sww sww1"></div><div class="sww sww2"></div><div class="sww sww3"></div><div class="sww sww4"></div><div class="sw-face"></div><div class="sw-eye"></div><div class="sw-legs"><div class="sw-leg"></div><div class="sw-leg"></div><div class="sw-leg"></div><div class="sw-leg"></div></div></div>`;
+      walkers.appendChild(w);
+    });
+  }
+});
+</script>
+
+</body>
+</html>

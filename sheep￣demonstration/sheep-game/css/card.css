@@ -1,0 +1,160 @@
+/* ════════════════════════
+   カードデザイン
+   手札・報酬画面で共用
+════════════════════════ */
+
+/* ── ベース ── */
+.card {
+  position: absolute;
+  width: 90px;
+  cursor: pointer;
+  transform-origin: center bottom;
+  transition: transform .1s ease-out, filter .08s ease-out;
+  filter: drop-shadow(0 4px 12px #000000aa);
+  will-change: transform;
+}
+.card.disabled { opacity: .32; cursor: not-allowed; }
+.card.swiping  { transition: none !important; z-index: 50 !important; }
+
+/* ── カード枠 ── */
+.card-frame {
+  border-radius: 8px 8px 5px 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* タイプ別テーマ */
+.card.breed  .card-frame { background: linear-gradient(160deg,#1e3812,#0d1a08); border: 2px solid #5a9a2a; }
+.card.attack .card-frame { background: linear-gradient(160deg,#38100e,#1a0606); border: 2px solid #9b2a2a; }
+.card.draw   .card-frame { background: linear-gradient(160deg,#101e38,#080e1a); border: 2px solid #2a5090; }
+.card.passive .card-frame{ background: linear-gradient(160deg,#2e1e08,#160e04); border: 2px solid #9a6a18; }
+
+/* ── ヘッダー ── */
+.card-header {
+  padding: 5px 7px 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card.breed  .card-header { background: linear-gradient(180deg,#2d5c1c,#1a3510); border-bottom: 1px solid #5a9a2a33; }
+.card.attack .card-header { background: linear-gradient(180deg,#5c1c1c,#3a0e0e); border-bottom: 1px solid #9b2a2a33; }
+.card.draw   .card-header { background: linear-gradient(180deg,#1c2c5c,#0e1a3a); border-bottom: 1px solid #2a509033; }
+.card.passive .card-header{ background: linear-gradient(180deg,#3c2010,#231408); border-bottom: 1px solid #9a6a1833; }
+
+.card-name {
+  font-family: var(--font-title);
+  font-size: 9px; font-weight: 700;
+  color: var(--gold3);
+  text-shadow: 0 1px 4px #000;
+}
+
+/* ── コストジェム ── */
+.card-cost {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 10px; font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px #000;
+  box-shadow: 0 2px 8px #00000077, inset 0 1px 0 rgba(255,255,255,.35);
+  border: 1px solid rgba(255,255,255,.2);
+  flex-shrink: 0;
+}
+.card.breed  .card-cost { background: radial-gradient(circle at 35% 30%, #a0e060, #2d5a1b); }
+.card.attack .card-cost { background: radial-gradient(circle at 35% 30%, #ff6b5a, #7b1a1a); }
+.card.draw   .card-cost { background: radial-gradient(circle at 35% 30%, #90c8ff, #1a3a6b); }
+.card.passive .card-cost{ background: radial-gradient(circle at 35% 30%, #ffe080, #8a5a10); }
+
+/* ── イラストエリア ── */
+.card-art {
+  width: 100%; height: 72px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+  position: relative; overflow: hidden;
+}
+.card.breed  .card-art { background: radial-gradient(ellipse at 50% 30%, #244818, #060e04); }
+.card.attack .card-art { background: radial-gradient(ellipse at 50% 30%, #380c0c, #060202); }
+.card.draw   .card-art { background: radial-gradient(ellipse at 50% 30%, #0c1838, #020508); }
+.card.passive .card-art{ background: radial-gradient(ellipse at 50% 30%, #281804, #080400); }
+.card-art::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 30%;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), transparent);
+  pointer-events: none; z-index: 1;
+}
+
+/* ── 区切り線 ── */
+.card-divider { height: 1px; opacity: .55; }
+.card.breed  .card-divider { background: linear-gradient(90deg,transparent,#7bc950,transparent); }
+.card.attack .card-divider { background: linear-gradient(90deg,transparent,#e74c3c,transparent); }
+.card.draw   .card-divider { background: linear-gradient(90deg,transparent,#74b9ff,transparent); }
+.card.passive .card-divider{ background: linear-gradient(90deg,transparent,#f0c060,transparent); }
+
+/* ── フッター ── */
+.card-footer { padding: 4px 7px 7px; min-height: 44px; position: relative; }
+.card.breed  .card-footer { background: linear-gradient(180deg,#0e1e0a,#081205); }
+.card.attack .card-footer { background: linear-gradient(180deg,#1e0808,#100404); }
+.card.draw   .card-footer { background: linear-gradient(180deg,#080e1e,#040812); }
+.card.passive .card-footer{ background: linear-gradient(180deg,#160e04,#0a0602); }
+
+.card-type {
+  font-family: var(--font-title);
+  font-size: 6px; letter-spacing: 2px; opacity: .5; margin-bottom: 2px;
+}
+.card.breed  .card-type { color: var(--green3); }
+.card.attack .card-type { color: var(--red3); }
+.card.draw   .card-type { color: var(--blue3); }
+.card.passive .card-type{ color: var(--gold2); }
+
+.card-desc { font-family: var(--font-body); font-size: 8.5px; line-height: 1.4; color: var(--parch2); }
+.card-desc strong { color: var(--gold3); font-weight: 700; }
+
+/* ── アニメーション ── */
+@keyframes cardDraw {
+  0%   { transform: translateY(60px) scale(.85); opacity: 0; }
+  60%  { transform: translateY(-5px) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.card.drawing { animation: cardDraw .22s cubic-bezier(.22,1,.36,1) both; }
+
+@keyframes cardPlay {
+  0%   { transform: translateY(0) scale(1) rotate(0); opacity: 1; }
+  40%  { transform: translateY(-70px) scale(1.12) rotate(-4deg); opacity: 1; }
+  100% { transform: translateY(-170px) scale(.6) rotate(8deg); opacity: 0; }
+}
+.card.playing {
+  animation: cardPlay .28s cubic-bezier(.4,0,.6,1) forwards !important;
+  pointer-events: none; z-index: 60 !important;
+}
+
+/* ── 報酬画面カード（サイズ違い） ── */
+.reward-card {
+  width: 118px;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 24px #00000099);
+  transition: transform .14s cubic-bezier(.22,1,.36,1), filter .14s ease;
+}
+.reward-card:hover {
+  transform: translateY(-14px) scale(1.07);
+  filter: drop-shadow(0 22px 38px #000000cc) drop-shadow(0 0 18px #c9962a55);
+}
+.reward-card .card-art   { height: 78px; font-size: 32px; }
+.reward-card .card-footer{ min-height: 50px; padding: 5px 7px 10px; }
+
+@keyframes rewardCardIn {
+  from { transform: translateY(50px) scale(.85); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+.reward-card-wrap { animation: rewardCardIn .5s cubic-bezier(.22,1,.36,1) both; }
+.reward-card-wrap:nth-child(1) { animation-delay: .05s; }
+.reward-card-wrap:nth-child(2) { animation-delay: .12s; }
+.reward-card-wrap:nth-child(3) { animation-delay: .19s; }
+
+@keyframes rewardCardSelect {
+  0%   { transform: scale(1.07) translateY(-14px); }
+  30%  { transform: scale(1.3) translateY(-40px); opacity: 1; }
+  100% { transform: scale(.6) translateY(-120px); opacity: 0; }
+}
+.reward-card.selected { animation: rewardCardSelect .4s ease forwards !important; pointer-events: none; }
+.reward-card.dimmed   { filter: brightness(.3); pointer-events: none; transition: filter .2s ease; }

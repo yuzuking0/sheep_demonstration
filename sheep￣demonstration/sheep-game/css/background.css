@@ -1,0 +1,70 @@
+/* ════════════════════════
+   背景システム
+   タイトル・戦闘画面で共用
+════════════════════════ */
+
+#bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #0a0705, #1a1008 35%, #2a1e08 65%, #0d0e08);
+}
+
+#bg-stars { position: absolute; inset: 0; }
+
+.bg-star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: starTw var(--d) ease-in-out infinite alternate;
+}
+@keyframes starTw {
+  from { opacity: var(--mo); }
+  to   { opacity: 1; }
+}
+
+#bg-moon {
+  position: absolute;
+  top: 6%; right: 8%;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #fff8dc, #f0d060);
+  box-shadow: 0 0 20px #f0d06066, 0 0 40px #c9962a44;
+}
+#bg-moon::after {
+  content: '';
+  position: absolute;
+  top: 5px; left: 10px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #0a0705;
+  box-shadow: -4px -3px 0 #f0d060;
+}
+
+.bg-cloud {
+  position: absolute;
+  opacity: .12;
+  animation: cloudMove linear infinite;
+}
+@keyframes cloudMove {
+  from { transform: translateX(110vw); }
+  to   { transform: translateX(-30vw); }
+}
+
+#bg-hills {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 42%;
+  pointer-events: none;
+}
+
+.bg-hill { position: absolute; bottom: 0; border-radius: 50% 50% 0 0; }
+.bh1 { width:65vw; height:22vh; left:-8vw;  background:linear-gradient(180deg,#1a2a0a,#0e1605); bottom:18%; }
+.bh2 { width:52vw; height:19vh; right:-6vw; background:linear-gradient(180deg,#162208,#0c1405); bottom:16%; }
+.bh3 { width:75vw; height:28vh; left:-12vw; background:linear-gradient(180deg,#243810,#14200a); }
+.bh4 { width:58vw; height:24vh; right:-10vw;background:linear-gradient(180deg,#1e3010,#121a08); }
+
+.bg-ground {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 8%;
+  background: linear-gradient(180deg, #2d4a10, #1a2e08);
+}
