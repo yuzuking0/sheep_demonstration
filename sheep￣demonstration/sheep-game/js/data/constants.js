@@ -18,7 +18,7 @@ export const ENEMY = {
     id:      'wolf',
     name:    '野生の狼',
     maxHp:   50,
-    attacks: [8, 8, 12, 8, 15],
+    attacks: [8,8,12,8,15],
   },
 };
 
