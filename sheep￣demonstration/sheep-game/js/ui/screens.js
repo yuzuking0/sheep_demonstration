@@ -17,6 +17,8 @@ let currentScreen = null;
  */
 export function showScreen(screenId) {
   // 全画面を非表示
+  console.log("出そうとした画面のID:", screenId); 
+
   Object.values(SCREENS).forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
@@ -24,6 +26,8 @@ export function showScreen(screenId) {
 
   // 対象画面を表示
   const target = document.getElementById(screenId);
+
+   console.log("見つかったHTML要素:", target);
   if (target) {
     target.style.display = 'flex';
     currentScreen = screenId;
