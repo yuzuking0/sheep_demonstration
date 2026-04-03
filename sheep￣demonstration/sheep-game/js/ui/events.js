@@ -102,7 +102,7 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
       const p   = Math.min(Math.abs(dy) / THRESHOLD, 1);
       const hex = Math.floor(p * 150).toString(16).padStart(2, '0');
       el.style.transform = `rotate(${baseAngle * (1 - p)}deg) translate(${dx * .2}px, ${dy}px) scale(${1 + p * .07})`;
-      el.style.filter    = `drop-shadow(0 ${8 + Math.abs(dy) * .22}px 18px #c9962a${hex})`;
+      el.style.filter    = `drop-shadow(0 ${ Math.abs(dy) * .22}px 18px #c9962a${hex})`;
     }
     e.preventDefault();
   }
