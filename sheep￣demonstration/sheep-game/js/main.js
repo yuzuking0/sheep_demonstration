@@ -10,7 +10,7 @@
 
 import { initState, resetForNextBattle } from './core/game-state.js';
 import { registerCallbacks, startBattle, finishTurn } from './core/battle.js';
-import { updateUI, showEnemyHitEffect, showPlayerHitEffect, showCardPlayEffect, renderRewardCards, resetHandState } from './ui/ui.js';
+import { updateUI, showEnemyHitEffect, showPlayerHitEffect, showCardPlayEffect, renderRewardCards, resetHandState, updateStageDisplay } from './ui/ui.js';
 import { showScreen }    from './ui/screens.js';
 import { initEvents }    from './ui/events.js';
 import { SFX }           from './systems/sound.js';
@@ -18,6 +18,7 @@ import { shuffle }       from './utils/helpers.js';
 import { SCREENS, ANIM } from './data/constants.js';
 import { CARDS }         from './data/cards.js';
 import { getState }      from './core/game-state.js';
+import { initShop, leaveShop, rerollShop } from './systems/city.js';
 
 // ════════════════════════
 // コールバック登録
@@ -58,15 +59,8 @@ registerCallbacks({
 
 /** 戦闘に勝った時 */
 function onBattleWin() {
-  const state = getState();
-
-  if (state.stage >= state.maxStage) {
-    // 全ステージクリア！
-    showClearScreen();
-  } else {
-    // まだステージが残ってる → 報酬画面へ
-    showRewardScreen();
-  }
+  // ボスステージ含め常に報酬 → ショップへ
+  showRewardScreen();
 }
 
 /** 戦闘に負けた時 */
@@ -74,22 +68,16 @@ function onBattleLose() {
   showScreen(SCREENS.TITLE);
 }
 
-/** 報酬選択が終わった時 */
+/** 報酬選択が終わった時 → ショップへ */
 function onRewardComplete(cardName) {
   const state = getState();
 
-  // ステージを進める
+  // ステージを進める（ショップ表示に反映）
   state.stage += 1;
 
-  // 次の戦闘の準備（デッキ引き継ぎ・HP等リセット）
-  resetHandState();
-  resetForNextBattle();
-
-  // ステージ表示を更新して戦闘へ
-  updateStageDisplay();
-  showScreen(SCREENS.BATTLE);
-  startBattle();
-  updateUI();
+  // ショップを初期化して画面遷移
+  initShop();
+  showScreen(SCREENS.SHOP);
 }
 
 // ════════════════════════
@@ -100,7 +88,7 @@ function onRewardComplete(cardName) {
 function startGame() {
   resetHandState();
   initState();
-  updateStageDisplay();
+  updateStageDisplay();   // ui.js からimport済み
   showScreen(SCREENS.BATTLE);
   startBattle();
   updateUI();
@@ -140,19 +128,6 @@ function showClearScreen() {
   showScreen(SCREENS.CLEAR);
 }
 
-/** ステージ番号の表示を更新 */
-function updateStageDisplay() {
-  const state = getState();
-  const el = document.getElementById('stage-label');
-  if (el) {
-    const isLast = state.stage === state.maxStage;
-    el.textContent = isLast
-      ? `BOSS STAGE`
-      : `STAGE ${state.stage} / ${state.maxStage}`;
-    el.style.color = isLast ? 'var(--red3)' : 'var(--gold2)';
-  }
-}
-
 // ════════════════════════
 // 背景生成
 // ════════════════════════
@@ -189,8 +164,10 @@ function initBackground() {
 window.Game = {
   startGame,
   finishTurn,
-  skipReward: () => onRewardComplete(null),
-  retry: () => startGame(),
+  skipReward:  () => onRewardComplete(null),
+  retry:       () => startGame(),
+  leaveShop,
+  rerollShop,
 };
 
 // ════════════════════════
