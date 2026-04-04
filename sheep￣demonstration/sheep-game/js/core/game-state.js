@@ -42,8 +42,9 @@ function getEnemyForStage(stage) {
   const stageData = STAGES[stage - 1] ?? STAGES[STAGES.length - 1];
   const enemyKey  = stageData.enemy;
   const base      = ENEMIES[enemyKey];
-  return { ...base, hp: base.maxHp };
+   return { ...base, hp: base.maxHp, key: enemyKey }; 
 }
+
 
 /**
  * ゲームを初期化して新しい状態を作る（ゲーム開始時に呼ぶ）
