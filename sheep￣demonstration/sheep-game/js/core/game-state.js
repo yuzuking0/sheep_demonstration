@@ -64,10 +64,12 @@ export function initState() {
     passives:  [],
     enemy:     getEnemyForStage(1),
     turnIdx:   0,
-    gameOver:  false,
+    gameOver:   false,
     // ステージ管理
-    stage:     1,
-    maxStage:  GAME.MAX_STAGE,
+    stage:      1,
+    maxStage:   GAME.MAX_STAGE,
+    // ショップ
+    shopCards:  [],
   };
 
   return state;
@@ -94,7 +96,7 @@ export function resetForNextBattle() {
   state.turn     = 1;
   state.turnIdx  = 0;
   state.gameOver = false;
-  state.passives = []; // パッシブ効果をリセットするかどうかはゲームデザインによります
+  // パッシブは仕様通り維持（リセットしない）
 
   // 次のステージの敵をセット
   state.enemy = getEnemyForStage(state.stage);

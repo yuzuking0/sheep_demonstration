@@ -47,8 +47,11 @@ export const SCREENS = {
   TITLE:   'title-screen',
   BATTLE:  'battle-screen',
   REWARD:  'reward-screen',
-  CLEAR:   'clear-screen',   // 追加
+  SHOP:    'shop-screen',
+  CLEAR:   'clear-screen',
 };
+
+export const REROLL_COST = 10;
 
 export const CARD_TYPES = {
   BREED:   'breed',    // 増殖系

@@ -30,23 +30,25 @@ export const CARDS = [
   // ── 増殖系 ──────────────────────────────────────────────
 
   {
-    id:    'breed',
-    name:  '繁殖',
-    cost:  1,
-    type:  CARD_TYPES.BREED,
-    emoji: '🐑',
-    desc:  '羊を <strong>+3</strong> 増やす',
+    id:     'breed',
+    name:   '繁殖',
+    cost:   1,
+    type:   CARD_TYPES.BREED,
+    rarity: 'common',
+    emoji:  '🐑',
+    desc:   '羊を <strong>+3</strong> 増やす',
     effect: () => [
       { type: 'gainSheep', value: 3 },
     ],
   },
 
   {
-    id:    'graze',
-    name:  '放牧',
-    cost:  1,
-    type:  CARD_TYPES.BREED,
-    emoji: '🌿',
+    id:     'graze',
+    name:   '放牧',
+    cost:   1,
+    type:   CARD_TYPES.BREED,
+    rarity: 'common',
+    emoji:  '🌿',
     desc:  '羊 <strong>+5</strong> ＋1ドロー',
     effect: () => [
       { type: 'gainSheep', value: 5 },
@@ -55,11 +57,12 @@ export const CARDS = [
   },
 
   {
-    id:    'herd',
-    name:  '群れ',
-    cost:  2,
-    type:  CARD_TYPES.BREED,
-    emoji: '🐑',
+    id:     'herd',
+    name:   '群れ',
+    cost:   2,
+    type:   CARD_TYPES.BREED,
+    rarity: 'common',
+    emoji:  '🐑',
     desc:  '羊を <strong>+12</strong> 増やす',
     effect: () => [
       { type: 'gainSheep', value: 12 },
@@ -67,11 +70,12 @@ export const CARDS = [
   },
 
   {
-    id:    'double',
-    name:  '倍化',
-    cost:  2,
-    type:  CARD_TYPES.BREED,
-    emoji: '✖️',
+    id:     'double',
+    name:   '倍化',
+    cost:   2,
+    type:   CARD_TYPES.BREED,
+    rarity: 'uncommon',
+    emoji:  '✖️',
     desc:  '羊を <strong>×2</strong>（最低+5）',
     effect: () => [
       { type: 'multiplySheep', value: 2 },
@@ -79,11 +83,12 @@ export const CARDS = [
   },
 
   {
-    id:    'pasture',
-    name:  '牧草地',
-    cost:  2,
-    type:  CARD_TYPES.PASSIVE,
-    emoji: '🌾',
+    id:     'pasture',
+    name:   '牧草地',
+    cost:   2,
+    type:   CARD_TYPES.PASSIVE,
+    rarity: 'uncommon',
+    emoji:  '🌾',
     desc:  '毎ターン終了時 <strong>+3</strong>',
     effect: () => [
       {
@@ -99,11 +104,12 @@ export const CARDS = [
   // ── 攻撃系 ──────────────────────────────────────────────
 
   {
-    id:    'ram',
-    name:  '体当たり',
-    cost:  1,
-    type:  CARD_TYPES.ATTACK,
-    emoji: '💥',
+    id:     'ram',
+    name:   '体当たり',
+    cost:   1,
+    type:   CARD_TYPES.ATTACK,
+    rarity: 'common',
+    emoji:  '💥',
     desc:  '羊 <strong>10</strong> 消費 → 敵に <strong>10</strong> ダメ',
     effect: () => [
       { type: 'loseSheep',  value: 10 },
@@ -112,11 +118,12 @@ export const CARDS = [
   },
 
   {
-    id:    'charge',
-    name:  '突撃',
-    cost:  2,
-    type:  CARD_TYPES.ATTACK,
-    emoji: '⚡',
+    id:     'charge',
+    name:   '突撃',
+    cost:   2,
+    type:   CARD_TYPES.ATTACK,
+    rarity: 'uncommon',
+    emoji:  '⚡',
     desc:  '羊 <strong>20</strong> 消費 → 敵に <strong>25</strong> ダメ',
     effect: () => [
       { type: 'loseSheep',  value: 20 },
@@ -125,11 +132,12 @@ export const CARDS = [
   },
 
   {
-    id:    'stampede',
-    name:  'スタンピード',
-    cost:  3,
-    type:  CARD_TYPES.ATTACK,
-    emoji: '🌪️',
+    id:     'stampede',
+    name:   'スタンピード',
+    cost:   3,
+    type:   CARD_TYPES.ATTACK,
+    rarity: 'rare',
+    emoji:  '🌪️',
     desc:  '羊 <strong>30</strong> 消費 → 敵に <strong>50</strong> ダメ',
     effect: () => [
       { type: 'loseSheep',  value: 30 },
@@ -138,11 +146,12 @@ export const CARDS = [
   },
 
   {
-    id:    'sacrifice',
-    name:  '特攻',
-    cost:  1,
-    type:  CARD_TYPES.ATTACK,
-    emoji: '🩸',
+    id:     'sacrifice',
+    name:   '特攻',
+    cost:   1,
+    type:   CARD_TYPES.ATTACK,
+    rarity: 'rare',
+    emoji:  '🩸',
     desc:  '羊の半分消費 → 同量ダメ',
     // stateが必要な場合だけ引数で受け取る
     effect: (state) => {
@@ -158,11 +167,12 @@ export const CARDS = [
   // ── ドロー系 ──────────────────────────────────────────────
 
   {
-    id:    'plan',
-    name:  '計画',
-    cost:  1,
-    type:  CARD_TYPES.DRAW,
-    emoji: '📋',
+    id:     'plan',
+    name:   '計画',
+    cost:   1,
+    type:   CARD_TYPES.DRAW,
+    rarity: 'common',
+    emoji:  '📋',
     desc:  'カードを <strong>2枚</strong> 引く',
     effect: () => [
       { type: 'draw', value: 2 },
@@ -170,11 +180,12 @@ export const CARDS = [
   },
 
   {
-    id:    'convert',
-    name:  '転換',
-    cost:  0,
-    type:  CARD_TYPES.DRAW,
-    emoji: '♻️',
+    id:     'convert',
+    name:   '転換',
+    cost:   0,
+    type:   CARD_TYPES.DRAW,
+    rarity: 'common',
+    emoji:  '♻️',
     desc:  '1枚捨て → <strong>2枚</strong> ドロー',
     effect: () => [
       { type: 'discardRandom' },
