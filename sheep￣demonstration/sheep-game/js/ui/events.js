@@ -1,10 +1,15 @@
-// ============================================================
+﻿// ============================================================
 // ui/events.js
-// イベント登録を管理する
+// ユーザー入力（タップ・スワイプ・クリック）を処理する
+//
+// 役割:
+//   - ユーザーの操作を検知する
+//   - battle.js の関数を呼ぶ（処理は任せる）
+//   - UIフィードバックはui.jsに任せる
 // ============================================================
 
-import { getState } from '../core/game-state.js';
 import { useCard, finishTurn } from '../core/battle.js';
+import { getState } from '../core/game-state.js';
 import { setFocus, getFocusedIdx, applyFocus } from './ui.js';
 
 // ════════════════════════
@@ -36,7 +41,7 @@ export function initEvents() {
 export function attachCardEvents(cardElement, cardIndex, baseTransform, baseAngle) {
   const state = getState();
   const card  = state.hand[cardIndex];
-  if (!card) return;
+  if (!card || state.energy < card.cost) return;
 
   // PC: ホバーでフォーカス
   cardElement.addEventListener('mouseenter', () => setFocus(cardIndex));
@@ -73,7 +78,6 @@ export function attachCardEvents(cardElement, cardIndex, baseTransform, baseAngl
 function setupCardSwipe(el, idx, baseTransform, baseAngle) {
   let startY = null, startX = null, dragging = false;
   const THRESHOLD = 65;
-  let winController = null;
 
   function onStart(e) {
     if (getState().gameOver) return;
@@ -81,12 +85,6 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
     startY = pt.clientY; startX = pt.clientX;
     dragging = true;
     document.getElementById('swipe-zone')?.classList.add('active');
-
-    // ドラッグ中だけ window にリスナーを追加し、終了時に自動削除
-    winController = new AbortController();
-    window.addEventListener('mousemove', onMove, { signal: winController.signal });
-    window.addEventListener('mouseup',   onEnd,  { signal: winController.signal });
-
     e.preventDefault();
   }
 
@@ -99,7 +97,7 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
       const p   = Math.min(Math.abs(dy) / THRESHOLD, 1);
       const hex = Math.floor(p * 150).toString(16).padStart(2, '0');
       el.style.transform = `rotate(${baseAngle * (1 - p)}deg) translate(${dx * .2}px, ${dy}px) scale(${1 + p * .07})`;
-      el.style.filter    = `drop-shadow(0 ${ Math.abs(dy) * .22}px 18px #c9962a${hex})`;
+      el.style.filter    = `drop-shadow(0 ${8+Math.abs(dy) * .22}px 18px #c9962a${hex})`;
     }
     e.preventDefault();
   }
@@ -107,8 +105,6 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
   function onEnd(e) {
     if (!dragging) return;
     dragging = false;
-    winController?.abort();
-    winController = null;
     document.getElementById('swipe-zone')?.classList.remove('active');
     const pt = e.changedTouches ? e.changedTouches[0] : e;
     const dy = pt.clientY - startY;
@@ -127,6 +123,8 @@ function setupCardSwipe(el, idx, baseTransform, baseAngle) {
   el.addEventListener('touchmove',  onMove,  { passive: false });
   el.addEventListener('touchend',   onEnd);
   el.addEventListener('mousedown',  onStart);
+  window.addEventListener('mousemove', e => { if (dragging) onMove(e); });
+  window.addEventListener('mouseup',   e => { if (dragging) onEnd(e); });
 }
 
 // ════════════════════════
@@ -178,6 +176,7 @@ function setupHandSwipe(area) {
       const dir    = dx < 0 ? 1 : -1;
       const cur    = fi < 0 ? (dir > 0 ? -1 : n) : fi;
       let   target = Math.max(0, Math.min(n - 1, cur + dir));
+      // コストが払えるカードを探す
       const state  = getState();
       for (let i = 0; i < n; i++) {
         const t = (target + i * dir + n * 2) % n;
