@@ -18,7 +18,7 @@ import { shuffle }       from './utils/helpers.js';
 import { SCREENS, ANIM } from './data/constants.js';
 import { CARDS }         from './data/cards.js';
 import { getState }      from './core/game-state.js';
-import { initShop, leaveShop, rerollShop } from './systems/city.js';
+import { initShop, leaveShop, rerollShop, enterShop } from './systems/city.js';
 
 // ════════════════════════
 // コールバック登録
@@ -168,6 +168,7 @@ window.Game = {
   retry:       () => startGame(),
   leaveShop,
   rerollShop,
+  enterShop,
 };
 
 // ════════════════════════

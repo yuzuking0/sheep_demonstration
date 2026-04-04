@@ -57,13 +57,58 @@ export function getPrice(card) {
 }
 
 // ════════════════════════
-// 初期化
+// 商人のセリフ
+// ════════════════════════
+
+const MERCHANT_QUOTES = [
+  'いらっしゃいませ！今日も最高の品を揃えましたぞ！',
+  'フォッフォッフォ…君の羊、全部置いていっても構わんぞ？',
+  '真珠より輝く逸品ぞろい！さあさあ、見ていってくれ！',
+  '羊が多ければ多いほど、良い買い物ができるというもの！',
+  '本日限りの特別価格だ！見逃すなよ！',
+  'ほほほ…良い目をしているな。わかる人間にはわかるのだよ。',
+  'カードは生き物じゃ。育てれば必ず報われる…はずじゃ！',
+];
+
+// ════════════════════════
+// 初期化（商人イントロ表示）
 // ════════════════════════
 
 export function initShop() {
   const state = getState();
   state.shopCards = generateShopCards();
-  renderShop();
+
+  // ランダムセリフ
+  const q   = MERCHANT_QUOTES[Math.floor(Math.random() * MERCHANT_QUOTES.length)];
+  const qEl = document.getElementById('merchant-quote');
+  if (qEl) qEl.textContent = q;
+
+  // イントロ表示 / カードグリッド非表示
+  const intro = document.getElementById('shop-intro');
+  const main  = document.getElementById('shop-main');
+  if (intro) { intro.style.display = 'flex'; intro.classList.remove('exit'); }
+  if (main)  { main.style.display  = 'none'; main.classList.remove('enter'); }
+}
+
+// ════════════════════════
+// イントロ → カードグリッドへ遷移
+// ════════════════════════
+
+export function enterShop() {
+  const intro = document.getElementById('shop-intro');
+  if (intro) intro.classList.add('exit');
+
+  setTimeout(() => {
+    if (intro) intro.style.display = 'none';
+
+    renderShop();
+
+    const main = document.getElementById('shop-main');
+    if (main) {
+      main.style.display = 'flex';
+      requestAnimationFrame(() => main.classList.add('enter'));
+    }
+  }, 450);
 }
 
 // ════════════════════════
