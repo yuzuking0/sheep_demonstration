@@ -26,6 +26,9 @@ let enemyHpGhost = 100;
 export function updateUI() {
     const s = getState();
     updateStats(s);
+    
+    updateEnemyVisuals(s);
+
     updateHPBars(s);
     updateHand(s);
     updateEnemyVisuals(s); // ← これを追加！
@@ -289,7 +292,7 @@ function setStyle(id, prop, value) {
 // ════════════════════════
 
 function updateEnemyVisuals(s) {
-    const enemyKey = s.enemy.key; // 'SLIME', 'WOLF', 'BOSS'
+    const enemyKey = s.enemy.id.toUpperCase();
     const visualIds = {
         'SLIME': 'slime',
         'WOLF':  'wolf',
