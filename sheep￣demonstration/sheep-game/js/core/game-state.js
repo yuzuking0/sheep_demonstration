@@ -72,25 +72,28 @@ export function initState() {
   return state;
 }
 
+
 /**
  * 次の戦闘用にリセットする（ステージをまたぐ時に呼ぶ）
- * デッキは引き継ぐ、羊・エナジー・ターンはリセット
+ * デッキは引き継ぐ、羊（HP）は維持し、エナジー・ターンはリセット
  */
 export function resetForNextBattle() {
-  // デッキ全部回収してシャッフル
+  // デッキ全部回収してシャッフル（ここはそのまま）
   const allCards = [...state.deck, ...state.hand, ...state.discard];
   state.deck    = shuffle(allCards);
   state.hand    = [];
   state.discard = [];
 
-  // 戦闘状態リセット
-  state.sheep    = GAME.INITIAL_SHEEP;
-  state.maxSheep = GAME.INITIAL_SHEEP;
+  // --- 修正箇所：ひつじの数（HP）に関するリセットを削除 ---
+  // state.sheep    = GAME.INITIAL_SHEEP; // これを削除
+  // state.maxSheep = GAME.INITIAL_SHEEP; // これを削除
+
+  // 戦闘状態のみリセット
   state.energy   = GAME.INITIAL_ENERGY;
   state.turn     = 1;
   state.turnIdx  = 0;
   state.gameOver = false;
-  state.passives = [];
+  state.passives = []; // パッシブ効果をリセットするかどうかはゲームデザインによります
 
   // 次のステージの敵をセット
   state.enemy = getEnemyForStage(state.stage);
