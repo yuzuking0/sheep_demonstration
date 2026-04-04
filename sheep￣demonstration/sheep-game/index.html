@@ -285,6 +285,92 @@
 @keyframes legSwing{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
 
 /* ════════════════════════
+   ショップ画面
+════════════════════════ */
+#shop-screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  padding: 10px 12px 8px; gap: 8px;
+}
+
+.shop-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 12px; flex-shrink: 0;
+  background: linear-gradient(90deg,#0e0b07cc,#1a1208cc,#0e0b07cc);
+  border: 1px solid #c9962a33; border-radius: 7px;
+}
+.shop-title {
+  font-family: var(--font-display); font-size: 18px; letter-spacing: 3px;
+  background: linear-gradient(180deg,var(--gold3),var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 1px 6px #c9962a66);
+}
+.shop-sub {
+  font-family: var(--font-title); font-size: 9px; color: var(--parch3);
+  letter-spacing: 2px; opacity: .6; margin-top: 2px;
+}
+.shop-sheep-display {
+  font-family: var(--font-display); font-size: 20px;
+  color: var(--green3); text-shadow: 0 0 10px #7bc95055;
+}
+
+#shop-cards {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  align-content: start;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+/* ショップ内カードは position:relative で配置 */
+#shop-cards .card {
+  position: relative;
+  width: 100%;
+  font-size: 0.82em;
+  cursor: pointer;
+  filter: drop-shadow(0 3px 8px #000000aa);
+}
+#shop-cards .card .card-art { padding: 2px 0; font-size: 1.4em; }
+
+.shop-card-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; position: relative;
+  transition: transform .15s;
+}
+.shop-card-wrap:hover:not(.sold) { transform: translateY(-5px); }
+.shop-card-wrap.sold {
+  opacity: .4; cursor: default; pointer-events: none;
+}
+
+.shop-rarity {
+  font-family: var(--font-title); font-size: 7px; letter-spacing: 1px;
+  padding: 1px 6px; border-radius: 5px; text-align: center;
+}
+.shop-rarity.common   { background: #222; color: #888; }
+.shop-rarity.uncommon { background: linear-gradient(90deg,#1a3a1a,#2a5a2a); color: #7ddc7d; }
+.shop-rarity.rare     { background: linear-gradient(90deg,#2a1a08,#6a3a10); color: #f0a060;
+                        box-shadow: 0 0 6px #c9962a55; }
+
+.shop-price {
+  font-family: var(--font-title); font-size: 10px;
+  color: var(--gold2); letter-spacing: 1px;
+}
+
+.sold-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-title); font-size: 11px; letter-spacing: 2px;
+  color: var(--parch3); background: #00000099; border-radius: 8px;
+}
+
+.shop-footer {
+  display: flex; justify-content: center; gap: 12px; flex-shrink: 0;
+}
+.shop-reroll-btn { font-size: 12px; }
+
+/* ════════════════════════
    報酬画面
 ════════════════════════ */
 #reward-screen {
@@ -516,6 +602,34 @@
   </div>
   <div id="reward-cards"></div>
   <button class="btn-ghost" onclick="Game.skipReward()">SKIP</button>
+</div>
+
+<!-- ════════════════════════
+     ショップ画面
+════════════════════════ -->
+<div id="shop-screen">
+
+  <!-- ヘッダー -->
+  <div class="shop-header">
+    <div>
+      <div class="shop-title">SHOP</div>
+      <div class="shop-sub">カードを購入しよう</div>
+    </div>
+    <div class="shop-sheep-display">🐑 <span id="shop-sheep-val">20</span></div>
+  </div>
+
+  <!-- カードグリッド -->
+  <div id="shop-cards"></div>
+
+  <!-- フッター -->
+  <div class="shop-footer">
+    <button class="btn-ghost shop-reroll-btn" onclick="Game.rerollShop()">
+      リロール&nbsp;🐑10
+    </button>
+    <button class="btn-gold" onclick="Game.leaveShop()" style="clip-path:none;border-radius:6px">
+      出発 →
+    </button>
+  </div>
 </div>
 
 <!-- ゲームオーバーオーバーレイ -->

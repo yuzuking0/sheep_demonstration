@@ -139,7 +139,7 @@ export function renderHand(s = getState()) {
   applyFocus();
 }
 
-function buildCardHTML(card) {
+export function buildCardHTML(card) {
     const typeLabel = { breed:'増殖', attack:'攻撃', draw:'ドロー', passive:'永続' }[card.type] || card.type;
     return `
         <div class="card-frame">
@@ -287,6 +287,28 @@ function setStyle(id, prop, value) {
     const el = document.getElementById(id);
     if (el) el.style[prop] = value;
 }
+// ════════════════════════
+// ステージ表示
+// ════════════════════════
+
+export function updateStageDisplay() {
+    const s = getState();
+    const el = document.getElementById('stage-label');
+    if (!el) return;
+    const isLast = s.stage === s.maxStage;
+    el.textContent = isLast ? 'BOSS STAGE' : `STAGE ${s.stage} / ${s.maxStage}`;
+    el.style.color  = isLast ? 'var(--red3)' : 'var(--gold2)';
+}
+
+// ════════════════════════
+// ショップ羊数更新
+// ════════════════════════
+
+export function updateShopSheepCount() {
+    const s = getState();
+    setText('shop-sheep-val', s.sheep);
+}
+
 // ════════════════════════
 // 敵の見た目切り替え
 // ════════════════════════
