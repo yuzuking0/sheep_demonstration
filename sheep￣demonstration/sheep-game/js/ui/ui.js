@@ -27,7 +27,7 @@ export function updateUI() {
     const s = getState();
     updateStats(s);
     
-    updateEnemyVisuals(s);
+    
 
     updateHPBars(s);
     updateHand(s);
