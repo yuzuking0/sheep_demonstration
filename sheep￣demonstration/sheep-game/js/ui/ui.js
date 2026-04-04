@@ -28,6 +28,7 @@ export function updateUI() {
     updateStats(s);
     updateHPBars(s);
     updateHand(s);
+    updateEnemyVisuals(s); // ← これを追加！
 }
 
 // ════════════════════════
@@ -282,4 +283,38 @@ function setWidth(id, pct) {
 function setStyle(id, prop, value) {
     const el = document.getElementById(id);
     if (el) el.style[prop] = value;
+}
+// ════════════════════════
+// 敵の見た目切り替え
+// ════════════════════════
+
+function updateEnemyVisuals(s) {
+    const enemyKey = s.enemy.key; // 'SLIME', 'WOLF', 'BOSS'
+    const visualIds = {
+        'SLIME': 'slime',
+        'WOLF':  'wolf',
+        'BOSS':  'boss'
+    };
+
+    // 一旦全部消す
+    Object.values(visualIds).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    // 今の敵だけ表示する
+    const currentId = visualIds[enemyKey];
+    if (currentId) {
+        const currentEl = document.getElementById(currentId);
+        if (currentEl) currentEl.style.display = 'block';
+    }
+
+    // 名前とタイプバッジもついでに更新
+    setText('enemy-name-display', s.enemy.name);
+    const badge = document.getElementById('enemy-type-badge');
+    if (badge) {
+        badge.textContent = s.enemy.type || 'MONSTER';
+        // クラス名を 'enemy-type-badge slime-type' のように付け替える
+        badge.className = `enemy-type-badge ${enemyKey?.toLowerCase()}-type`;
+    }
 }
