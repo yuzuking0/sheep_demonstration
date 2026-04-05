@@ -8,7 +8,7 @@
 //   - UIは直接触らない
 // ============================================================
 
-import { GAME, ENEMIES, STAGES } from '../data/constants.js';
+import { GAME, ENEMIES } from '../data/constants.js';
 import { buildStarterDeck } from '../data/cards.js';
 import { shuffle } from '../utils/helpers.js';
 
@@ -36,18 +36,16 @@ import { shuffle } from '../utils/helpers.js';
 let state = null;
 
 /**
- * ステージ番号（1始まり）に対応する敵データを返す
+ * 敵キー（'WOLF', 'SLIME' 等）から敵データを返す
  */
-function getEnemyForStage(stage) {
-  const stageData = STAGES[stage - 1] ?? STAGES[STAGES.length - 1];
-  const enemyKey  = stageData.enemy;
-  const base      = ENEMIES[enemyKey];
-   return { ...base, hp: base.maxHp, key: enemyKey }; 
+function getEnemyForKey(key) {
+  const base = ENEMIES[key];
+  return { ...base, hp: base.maxHp, key };
 }
-
 
 /**
  * ゲームを初期化して新しい状態を作る（ゲーム開始時に呼ぶ）
+ * ※ map フィールドはこの後 main.js 側で generateMap() してセットする
  */
 export function initState() {
   const deck = shuffle(buildStarterDeck());
@@ -62,14 +60,13 @@ export function initState() {
     hand:      [],
     discard:   [],
     passives:  [],
-    enemy:     getEnemyForStage(1),
+    enemy:     null,   // マップのノード選択時にセットされる
     turnIdx:   0,
-    gameOver:   false,
-    // ステージ管理
-    stage:      1,
-    maxStage:   GAME.MAX_STAGE,
+    gameOver:  false,
+    // マップ（main.js 側でセット）
+    map:       null,
     // ショップ
-    shopCards:  [],
+    shopCards: [],
   };
 
   return state;
@@ -77,29 +74,22 @@ export function initState() {
 
 
 /**
- * 次の戦闘用にリセットする（ステージをまたぐ時に呼ぶ）
- * デッキは引き継ぐ、羊（HP）は維持し、エナジー・ターンはリセット
+ * 次の戦闘用にリセットする（ノード選択時に呼ぶ）
+ * @param {string} enemyKey - 'WOLF' | 'SLIME' | 'ELITE_WOLF' | 'BOSS'
  */
-export function resetForNextBattle() {
-  // デッキ全部回収してシャッフル（ここはそのまま）
+export function resetForNextBattle(enemyKey) {
   const allCards = [...state.deck, ...state.hand, ...state.discard];
   state.deck    = shuffle(allCards);
   state.hand    = [];
   state.discard = [];
 
-  // --- 修正箇所：ひつじの数（HP）に関するリセットを削除 ---
-  // state.sheep    = GAME.INITIAL_SHEEP; // これを削除
-  // state.maxSheep = GAME.INITIAL_SHEEP; // これを削除
-
-  // 戦闘状態のみリセット
   state.energy   = GAME.INITIAL_ENERGY;
   state.turn     = 1;
   state.turnIdx  = 0;
   state.gameOver = false;
-  // パッシブは仕様通り維持（リセットしない）
+  // パッシブは維持
 
-  // 次のステージの敵をセット
-  state.enemy = getEnemyForStage(state.stage);
+  state.enemy = getEnemyForKey(enemyKey);
 }
 
 /**

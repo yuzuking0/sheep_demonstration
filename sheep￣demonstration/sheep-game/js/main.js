@@ -3,9 +3,13 @@
 // エントリーポイント - ここから全部始まる
 //
 // ゲームループ:
-//   タイトル → 戦闘 → 報酬 → 戦闘 → ... → ボス → クリア
-//                                    ↓（負け）
-//                                  タイトル
+//   タイトル → マップ → [ノード選択]
+//                ↑            ↓
+//                └── 完了 ← 戦闘/ショップ/休憩/エリート/ボス
+//                                  ↓（ボス撃破）
+//                               クリア画面
+//                  ↓（負け）
+//               タイトル
 // ============================================================
 
 import { initState, resetForNextBattle } from './core/game-state.js';
@@ -18,7 +22,9 @@ import { shuffle }       from './utils/helpers.js';
 import { SCREENS, ANIM } from './data/constants.js';
 import { CARDS }         from './data/cards.js';
 import { getState }      from './core/game-state.js';
-import { initShop, leaveShop, rerollShop, enterShop } from './systems/city.js';
+import { initShop, leaveShop, rerollShop, enterShop, setLeaveShopCallback } from './systems/city.js';
+import { generateMap, completeMapNode, getNodeById } from './systems/map.js';
+import { registerMapCallback, renderMap }            from './ui/map-ui.js';
 
 // ════════════════════════
 // コールバック登録
@@ -53,90 +59,160 @@ registerCallbacks({
   },
 });
 
+// マップ → ノード選択時
+registerMapCallback(onMapNodeSelected);
+
+// ショップ退出 → マップへ戻る
+setLeaveShopCallback(() => {
+  completeMapNode();
+  showScreen(SCREENS.MAP);
+  renderMap();
+  updateMapSheep();
+});
+
 // ════════════════════════
-// ステージ進行
+// マップ → ノード処理
 // ════════════════════════
 
-/** 戦闘に勝った時 */
-function onBattleWin() {
-  // ボスステージ含め常に報酬 → ショップへ
-  showRewardScreen();
-}
+/**
+ * マップでノードを選んだ時に呼ばれる
+ */
+function onMapNodeSelected(node) {
+  switch (node.type) {
+    case 'battle':
+    case 'elite':
+    case 'boss':
+      resetHandState();
+      resetForNextBattle(node.enemyKey);
+      updateStageDisplay();
+      showScreen(SCREENS.BATTLE);
+      startBattle();
+      updateUI();
+      break;
 
-/** 戦闘に負けた時 */
-function onBattleLose() {
-  showScreen(SCREENS.TITLE);
-}
+    case 'shop':
+      initShop();
+      showScreen(SCREENS.SHOP);
+      break;
 
-/** 報酬選択が終わった時 → ボス後はショップ、通常は次戦闘へ */
-function onRewardComplete(cardName) {
-  const state = getState();
-  const isBoss = state.enemy.key === 'BOSS';
-
-  // ステージを進める
-  state.stage += 1;
-
-  if (isBoss) {
-    // ボス戦後 → ショップへ
-    initShop();
-    showScreen(SCREENS.SHOP);
-  } else {
-    // 通常戦後 → 次の戦闘へ直行
-    resetHandState();
-    resetForNextBattle();
-    updateStageDisplay();
-    showScreen(SCREENS.BATTLE);
-    startBattle();
-    updateUI();
+    case 'rest':
+      enterRest();
+      break;
   }
 }
 
 // ════════════════════════
-// 画面制御
+// 戦闘結果
 // ════════════════════════
 
-/** タイトル → 戦闘開始 */
-function startGame() {
-  resetHandState();
-  initState();
-  updateStageDisplay();   // ui.js からimport済み
-  showScreen(SCREENS.BATTLE);
-  startBattle();
-  updateUI();
-  initBackground();
+function onBattleWin() {
+  showRewardScreen();
 }
 
-/** 報酬画面を表示 */
+function onBattleLose() {
+  showScreen(SCREENS.TITLE);
+}
+
+// ════════════════════════
+// 報酬画面
+// ════════════════════════
+
 function showRewardScreen() {
   const pool = shuffle([...CARDS]).slice(0, 3);
   renderRewardCards(pool);
 
-  // カード選択イベント
   document.querySelectorAll('.reward-card').forEach((el, i) => {
     el.addEventListener('click', () => {
       const card = pool[i];
-
-      // デッキに追加
       getState().deck.push({ ...card });
 
-      // 選択アニメ
       document.querySelectorAll('.reward-card').forEach((c, j) => {
         c.classList.add(j === i ? 'selected' : 'dimmed');
       });
 
-      setTimeout(() => onRewardComplete(card.name), 500);
+      setTimeout(() => onRewardComplete(), 500);
     });
   });
 
   showScreen(SCREENS.REWARD);
 }
 
-/** クリア画面を表示 */
+function onRewardComplete() {
+  const state = getState();
+  const nodeId = state.map.chosenPath[state.map.chosenPath.length - 1];
+  const node   = getNodeById(nodeId);
+
+  completeMapNode();
+
+  if (node.type === 'boss') {
+    showClearScreen();
+  } else {
+    showScreen(SCREENS.MAP);
+    renderMap();
+    updateMapSheep();
+  }
+}
+
+// ════════════════════════
+// 休憩処理
+// ════════════════════════
+
+const REST_HEAL = 5;
+
+function enterRest() {
+  const state  = getState();
+  const actual = Math.min(REST_HEAL, state.maxSheep - state.sheep);
+  state.sheep  = Math.min(state.sheep + REST_HEAL, state.maxSheep);
+
+  const el = document.getElementById('rest-heal-text');
+  if (el) {
+    el.textContent = actual > 0
+      ? `羊が ${actual} 体 戻ってきた！`
+      : '羊はすでに満員だ…';
+  }
+  showScreen(SCREENS.REST);
+}
+
+function leaveRest() {
+  completeMapNode();
+  showScreen(SCREENS.MAP);
+  renderMap();
+  updateMapSheep();
+}
+
+// ════════════════════════
+// クリア画面
+// ════════════════════════
+
 function showClearScreen() {
   const state = getState();
   const el = document.getElementById('clear-sheep');
   if (el) el.textContent = `残り羊：${state.sheep}体`;
   showScreen(SCREENS.CLEAR);
+}
+
+// ════════════════════════
+// マップ画面
+// ════════════════════════
+
+function updateMapSheep() {
+  const state = getState();
+  const el = document.getElementById('map-sheep-display');
+  if (el) el.textContent = `🐑 ${state.sheep}`;
+}
+
+// ════════════════════════
+// ゲーム開始
+// ════════════════════════
+
+function startGame() {
+  resetHandState();
+  initState();
+  getState().map = generateMap();
+  updateMapSheep();
+  showScreen(SCREENS.MAP);
+  renderMap();
+  initBackground();
 }
 
 // ════════════════════════
@@ -175,11 +251,12 @@ function initBackground() {
 window.Game = {
   startGame,
   finishTurn,
-  skipReward:  () => onRewardComplete(null),
+  skipReward:  () => onRewardComplete(),
   retry:       () => startGame(),
   leaveShop,
   rerollShop,
   enterShop,
+  leaveRest,
 };
 
 // ════════════════════════
@@ -190,4 +267,3 @@ document.addEventListener('DOMContentLoaded', () => {
   initEvents();
   showScreen(SCREENS.TITLE);
 });
-

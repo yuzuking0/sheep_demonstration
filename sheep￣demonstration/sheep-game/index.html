@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/background.css">
 <link rel="stylesheet" href="css/card.css">
+<link rel="stylesheet" href="css/map.css">
 
 <style>
 /* ════════════════════════
@@ -195,9 +196,10 @@
   font-family:var(--font-title); font-size:8px; letter-spacing:2px;
   padding:2px 10px; border-radius:10px; font-weight:700;
 }
-.enemy-type-badge.slime-type { background:linear-gradient(90deg,#116633,#22cc66); color:#ccffdd; box-shadow:0 0 8px #22cc6644; }
-.enemy-type-badge.wolf-type  { background:linear-gradient(90deg,#333,#666); color:#ddd; }
-.enemy-type-badge.boss-type  { background:linear-gradient(90deg,#660000,#cc0000); color:#ffcccc; animation:badgePulse 1.5s ease-in-out infinite alternate; }
+.enemy-type-badge.slime-type      { background:linear-gradient(90deg,#116633,#22cc66); color:#ccffdd; box-shadow:0 0 8px #22cc6644; }
+.enemy-type-badge.wolf-type       { background:linear-gradient(90deg,#333,#666); color:#ddd; }
+.enemy-type-badge.elite_wolf-type { background:linear-gradient(90deg,#440000,#880000); color:#ffaaaa; box-shadow:0 0 8px #dd222244; animation:badgePulse 1.5s ease-in-out infinite alternate; }
+.enemy-type-badge.boss-type       { background:linear-gradient(90deg,#660000,#cc0000); color:#ffcccc; animation:badgePulse 1.5s ease-in-out infinite alternate; }
 @keyframes badgePulse { from{box-shadow:0 0 6px #ff000044} to{box-shadow:0 0 14px #ff0000aa} }
 
 /* 手札エリア */
@@ -891,6 +893,33 @@
 </div>
 
 
+
+<!-- ════════════════════════
+     マップ画面
+════════════════════════ -->
+<div id="map-screen">
+  <div id="map-header">
+    <div id="map-title">MAP</div>
+    <div id="map-floor-label">FLOOR - / 8</div>
+    <div id="map-sheep-display">🐑 20</div>
+  </div>
+  <div id="map-scroll">
+    <div id="map-container"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     休憩画面
+════════════════════════ -->
+<div id="rest-screen">
+  <div class="rest-content">
+    <div class="rest-title">🛏️ 休憩所</div>
+    <div class="rest-sub">REST POINT</div>
+    <div class="rest-scene">🐑💤</div>
+    <div id="rest-heal-text">羊が 5 体 戻ってきた！</div>
+    <button class="btn-gold" onclick="Game.leaveRest()" style="clip-path:none;border-radius:6px;margin-top:6px">出発する</button>
+  </div>
+</div>
 
 <!-- ════════════════════════
      クリア画面
