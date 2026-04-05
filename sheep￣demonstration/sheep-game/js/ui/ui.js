@@ -84,7 +84,7 @@ function updateHPBars(s) {
 // ════════════════════════
 
 function updateHand(s) {
-    const handIds = s.hand.map(c => c.id).join(',');
+    const handIds = s.hand.map(c => c.id).join(',') + '|' + s.energy;
     if (handIds !== lastHandIds) {
           lastHandIds = handIds;
           renderHand(s);
