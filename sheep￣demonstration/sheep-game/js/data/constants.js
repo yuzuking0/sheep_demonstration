@@ -10,7 +10,7 @@ export const GAME = {
   MAX_ENERGY:         3,
   HAND_SIZE:          5,
   STARTER_DECK_SIZE:  10,
-  MAX_STAGE:          3,   // ステージ数（STAGESの長さと合わせる）
+  MAP_FLOORS:         8,   // マップのフロア数
 };
 
 export const ENEMIES = {
@@ -26,6 +26,13 @@ export const ENEMIES = {
     name:    'スライム',
     maxHp:   30,
     attacks: [5, 5, 7],
+  },
+
+  ELITE_WOLF: {
+    id:      'elite_wolf',
+    name:    '禍狼',
+    maxHp:   65,
+    attacks: [12, 10, 18, 12],
   },
 
   BOSS: {
@@ -45,10 +52,20 @@ export const STAGES = [
 
 export const SCREENS = {
   TITLE:   'title-screen',
+  MAP:     'map-screen',
   BATTLE:  'battle-screen',
+  REST:    'rest-screen',
   REWARD:  'reward-screen',
   SHOP:    'shop-screen',
   CLEAR:   'clear-screen',
+};
+
+export const NODE_TYPES = {
+  BATTLE: 'battle',
+  ELITE:  'elite',
+  SHOP:   'shop',
+  REST:   'rest',
+  BOSS:   'boss',
 };
 
 export const REROLL_COST = 10;

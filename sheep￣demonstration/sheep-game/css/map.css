@@ -1,0 +1,240 @@
+/* ============================================================
+   map.css
+   マップ画面専用スタイル
+============================================================ */
+
+/* ════════════════════════
+   マップ画面
+════════════════════════ */
+
+#map-screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  background: transparent;
+}
+
+/* ── ヘッダー ── */
+#map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: linear-gradient(90deg, #0e0b07cc, #1a1208cc, #0e0b07cc);
+  border-bottom: 1px solid #c9962a33;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+#map-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 3px;
+  background: linear-gradient(180deg, var(--gold3), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 6px #c9962a55);
+}
+
+#map-floor-label {
+  font-family: var(--font-title);
+  font-size: 10px;
+  color: var(--gold2);
+  letter-spacing: 2px;
+}
+
+#map-sheep-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--green3);
+  text-shadow: 0 0 10px #7bc95055;
+}
+
+/* ── スクロール領域 ── */
+#map-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 0 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── ノードコンテナ ── */
+#map-container {
+  position: relative;
+  width: 100%;
+}
+
+/* ════════════════════════
+   マップノード
+════════════════════════ */
+
+.map-node {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+  background: #1a1208;
+  border: 2px solid #3a3020;
+  z-index: 1;
+}
+
+.mn-icon {
+  font-size: 16px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.mn-label {
+  font-family: var(--font-title);
+  font-size: 6px;
+  letter-spacing: 0.5px;
+  color: var(--parch3);
+  opacity: 0.7;
+  margin-top: 1px;
+  pointer-events: none;
+}
+
+/* ── ノード種別カラー ── */
+
+.mn-battle {
+  border-color: #6a3a10;
+  background: radial-gradient(circle at 40% 35%, #2a1a0a, #1a0e06);
+}
+
+.mn-elite {
+  border-color: #7a0a0a;
+  background: radial-gradient(circle at 40% 35%, #2a0a0a, #160505);
+}
+
+.mn-shop {
+  border-color: #2a5a2a;
+  background: radial-gradient(circle at 40% 35%, #0a2a0a, #061606);
+}
+
+.mn-rest {
+  border-color: #1a3a6a;
+  background: radial-gradient(circle at 40% 35%, #0a1a2a, #060e16);
+}
+
+.mn-boss {
+  border-color: #8b0000;
+  background: radial-gradient(circle at 40% 35%, #2a0505, #160202);
+  box-shadow: 0 0 12px #ff000033;
+}
+
+/* ── 選択可能（明るく・クリッカブル） ── */
+
+.map-node.mn-available {
+  cursor: pointer;
+  border-width: 2.5px;
+  animation: nodeAvailPulse 1.8s ease-in-out infinite alternate;
+}
+
+.mn-available.mn-battle { border-color: #c9762a; box-shadow: 0 0 10px #c9762a55; }
+.mn-available.mn-elite  { border-color: #dd2222; box-shadow: 0 0 10px #dd222255; }
+.mn-available.mn-shop   { border-color: #44cc44; box-shadow: 0 0 10px #44cc4455; }
+.mn-available.mn-rest   { border-color: #4488dd; box-shadow: 0 0 10px #4488dd55; }
+.mn-available.mn-boss   { border-color: #ff2222; box-shadow: 0 0 16px #ff000066; }
+
+.map-node.mn-available:hover {
+  transform: scale(1.18);
+  z-index: 2;
+}
+
+@keyframes nodeAvailPulse {
+  from { filter: brightness(1.0); }
+  to   { filter: brightness(1.35); }
+}
+
+/* ── 選択済み（プレイヤーが通ったパス） ── */
+
+.map-node.mn-chosen {
+  border-color: #c9962a;
+  background: radial-gradient(circle at 40% 35%, #3a2a08, #2a1e05);
+  box-shadow: 0 0 8px #c9962a66;
+}
+
+/* ── クリア済み（薄暗く） ── */
+
+.map-node.mn-cleared {
+  opacity: 0.45;
+  filter: saturate(0.3);
+}
+
+/* ════════════════════════
+   休憩画面
+════════════════════════ */
+
+#rest-screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 20px;
+  background: #000000ee;
+}
+
+.rest-content {
+  text-align: center;
+  animation: rSlide .45s cubic-bezier(.22, 1, .36, 1) both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 32px 40px;
+  background: linear-gradient(180deg, #1a1208, #0e0b07);
+  border: 1px solid #c9962a44;
+  border-radius: 12px;
+  box-shadow: 0 0 40px #00000088;
+}
+
+.rest-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 3px;
+  background: linear-gradient(180deg, #88ccff, #5599dd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 8px #88ccff44);
+}
+
+.rest-sub {
+  font-family: var(--font-title);
+  font-size: 10px;
+  color: var(--parch3);
+  letter-spacing: 3px;
+  opacity: .6;
+}
+
+.rest-scene {
+  font-size: 44px;
+  filter: drop-shadow(0 4px 12px #00000088);
+  animation: restFloat 3s ease-in-out infinite alternate;
+}
+
+@keyframes restFloat {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-6px); }
+}
+
+#rest-heal-text {
+  font-family: var(--font-title);
+  font-size: 13px;
+  color: var(--green3);
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px #7bc95066;
+  padding: 8px 20px;
+  background: #0a1a0a;
+  border: 1px solid #2d5a1b44;
+  border-radius: 6px;
+}
