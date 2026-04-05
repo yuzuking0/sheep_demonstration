@@ -54,14 +54,24 @@ function updateStats(s) {
 // ════════════════════════
 
 function updateHPBars(s) {
-    // プレイヤーHP
+  // 1. ゲージの幅（％）を更新
+  // バーを伸ばす計算には上限(s.maxSheep)が必要なので、引数は2つのままにします
   const hpPct = toPercent(s.sheep, s.maxSheep);
-    setWidth('sheep-hp-fill', hpPct);
-    setStyle('sheep-hp-fill', 'background',
-                 s.sheep < 8  ? 'linear-gradient(90deg,#7b1a1a,#e74c3c)' :
-                 s.sheep < 15 ? 'linear-gradient(90deg,#8a6010,#f0c060)' :
-                                'linear-gradient(90deg,#2d5a1b,#7bc950)'
-               );
+  setWidth('sheep-hp-fill', hpPct);
+
+  // 2. 残り数に応じてゲージの色を変更
+  setStyle('sheep-hp-fill', 'background',
+    s.sheep < 8  ? 'linear-gradient(90deg,#7b1a1a,#e74c3c)' :
+    s.sheep < 15 ? 'linear-gradient(90deg,#8a6010,#f0c060)' :
+                   'linear-gradient(90deg,#2d5a1b,#7bc950)'
+  );
+
+  // 3. UIのテキスト表示を「現在値のみ」に更新
+  // HTML側で数値を表示している要素（例: id="sheep-hp-val"）の中身を書き換えます
+  const hpValEl = document.getElementById("hp-nums"); 
+  if (hpValEl) {
+    hpValEl.textContent = s.sheep; // ここを s.sheep だけにすることで上限が消えます
+  }
 
   // 敵HP（ゴースト付き）
   const eHpPct = toPercent(s.enemy.hp, s.enemy.maxHp);
