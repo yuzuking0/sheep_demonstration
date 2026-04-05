@@ -305,9 +305,13 @@ export function updateStageDisplay() {
     const s = getState();
     const el = document.getElementById('stage-label');
     if (!el) return;
-    const isLast = s.stage === s.maxStage;
-    el.textContent = isLast ? 'BOSS STAGE' : `STAGE ${s.stage} / ${s.maxStage}`;
-    el.style.color  = isLast ? 'var(--red3)' : 'var(--gold2)';
+    if (s.map) {
+        const floor  = s.map.currentFloor + 1;
+        const total  = s.map.floors.length;
+        const isBoss = floor === total;
+        el.textContent = isBoss ? 'BOSS' : `FLOOR ${floor} / ${total}`;
+        el.style.color  = isBoss ? 'var(--red3)' : 'var(--gold2)';
+    }
 }
 
 // ════════════════════════
@@ -324,11 +328,13 @@ export function updateShopSheepCount() {
 // ════════════════════════
 
 function updateEnemyVisuals(s) {
+    if (!s.enemy) return;
     const enemyKey = s.enemy.id.toUpperCase();
     const visualIds = {
-        'SLIME': 'slime',
-        'WOLF':  'wolf',
-        'BOSS':  'boss'
+        'SLIME':      'slime',
+        'WOLF':       'wolf',
+        'ELITE_WOLF': 'wolf',  // エリートは狼ビジュアルを流用
+        'BOSS':       'boss'
     };
 
     // 一旦全部消す

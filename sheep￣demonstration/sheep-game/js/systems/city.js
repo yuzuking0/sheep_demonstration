@@ -9,19 +9,15 @@
 //   - 出発（次戦闘への遷移）
 // ============================================================
 
-import { CARDS }                        from '../data/cards.js';
-import { SCREENS, REROLL_COST }         from '../data/constants.js';
-import { getState, resetForNextBattle } from '../core/game-state.js';
-import { startBattle }                  from '../core/battle.js';
-import { shuffle }                      from '../utils/helpers.js';
-import { showScreen }                   from '../ui/screens.js';
-import {
-  updateUI,
-  resetHandState,
-  buildCardHTML,
-  updateStageDisplay,
-  updateShopSheepCount,
-} from '../ui/ui.js';
+import { CARDS }          from '../data/cards.js';
+import { REROLL_COST }    from '../data/constants.js';
+import { getState }       from '../core/game-state.js';
+import { shuffle }        from '../utils/helpers.js';
+import { buildCardHTML, updateShopSheepCount } from '../ui/ui.js';
+
+// ショップ退出時のコールバック（main.js が登録）
+let leaveCallback = null;
+export function setLeaveShopCallback(cb) { leaveCallback = cb; }
 
 // ════════════════════════
 // カードプール（レアリティ別）
@@ -152,27 +148,11 @@ export function rerollShop() {
 }
 
 // ════════════════════════
-// 出発（次戦闘へ）
+// 出発（マップへ戻る）
 // ════════════════════════
 
 export function leaveShop() {
-  const state = getState();
-
-  // ボスステージクリア後（全ステージ制覇）→ クリア画面へ
-  if (state.stage > state.maxStage) {
-    const el = document.getElementById('clear-sheep');
-    if (el) el.textContent = `残り羊：${state.sheep}体`;
-    showScreen(SCREENS.CLEAR);
-    return;
-  }
-
-  // 通常：次の戦闘へ
-  resetHandState();
-  resetForNextBattle();
-  updateStageDisplay();
-  showScreen(SCREENS.BATTLE);
-  startBattle();
-  updateUI();
+  if (leaveCallback) leaveCallback();
 }
 
 // ════════════════════════
