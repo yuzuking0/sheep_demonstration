@@ -68,16 +68,27 @@ function onBattleLose() {
   showScreen(SCREENS.TITLE);
 }
 
-/** 報酬選択が終わった時 → ショップへ */
+/** 報酬選択が終わった時 → ボス後はショップ、通常は次戦闘へ */
 function onRewardComplete(cardName) {
   const state = getState();
+  const isBoss = state.enemy.key === 'BOSS';
 
-  // ステージを進める（ショップ表示に反映）
+  // ステージを進める
   state.stage += 1;
 
-  // ショップを初期化して画面遷移
-  initShop();
-  showScreen(SCREENS.SHOP);
+  if (isBoss) {
+    // ボス戦後 → ショップへ
+    initShop();
+    showScreen(SCREENS.SHOP);
+  } else {
+    // 通常戦後 → 次の戦闘へ直行
+    resetHandState();
+    resetForNextBattle();
+    updateStageDisplay();
+    showScreen(SCREENS.BATTLE);
+    startBattle();
+    updateUI();
+  }
 }
 
 // ════════════════════════
