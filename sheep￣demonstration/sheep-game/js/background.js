@@ -1,15 +1,14 @@
-// --- ドット絵風のダークな夜の森 背景プログラム ---
+// --- ドット絵風のダークな夜の森（1枚目画像リスペクト版） ---
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 
-// ★ドットの粗さ（数字が大きいほどファミコンっぽく荒くなります。おすすめは 3 か 4）
-const PIXEL_SCALE = 3;
+// ★ドットの粒の大きさ（4くらいが一番「レトロなドット絵」っぽくなります）
+const PIXEL_SCALE = 4;
 
 function resize() {
-    // 画面サイズをあえて小さく設定することで、ドット絵にする
-    canvas.width = window.innerWidth / PIXEL_SCALE;
-    canvas.height = window.innerHeight / PIXEL_SCALE;
-    ctx.imageSmoothingEnabled = false; // ぼかしをオフ
+    canvas.width = Math.floor(window.innerWidth / PIXEL_SCALE);
+    canvas.height = Math.floor(window.innerHeight / PIXEL_SCALE);
+    ctx.imageSmoothingEnabled = false; // ぼかしを完全にオフ
 }
 window.addEventListener('resize', resize);
 resize();
@@ -17,115 +16,108 @@ resize();
 // --- データの準備 ---
 // 1. 星のデータ
 const stars = [];
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 60; i++) {
     stars.push({
         x: Math.random() * 1000,
-        y: Math.random() * 500,
-        speed: Math.random() * 0.05 + 0.01,
+        y: Math.random() * (canvas.height * 0.7), // 星は上の方だけ
+        speed: Math.random() * 0.05 + 0.02,
         alpha: Math.random()
     });
 }
 
-// 2. 流れる雲のデータ
-const clouds = [];
-for (let i = 0; i < 6; i++) {
-    clouds.push({
-        x: Math.random() * 1000,
-        y: Math.random() * (canvas.height * 0.5), // 空の上半分に配置
-        width: 80 + Math.random() * 100,
-        height: 15 + Math.random() * 20,
-        speed: 0.1 + Math.random() * 0.2
-    });
-}
-
-// 3. 左右の枯れ木のデータを作る関数
+// 2. 枯れ木のデータ（今回は「四角」を繋げてドット絵っぽくする）
 const treeBranches = [];
-function makeTree(x, y, length, angle, width, depth) {
+function makePixelTree(x, y, length, angle, width, depth) {
     if (depth === 0) return;
     treeBranches.push({ x, y, length, angle, width });
 
-    // 次の枝の計算
     const nextX = x - Math.sin(angle) * length;
     const nextY = y - Math.cos(angle) * length;
-    // 枝分かれ
-    makeTree(nextX, nextY, length * 0.7, angle - 0.5, width * 0.7, depth - 1);
-    makeTree(nextX, nextY, length * 0.7, angle + 0.5, width * 0.7, depth - 1);
+    // 角度をランダムにして、カクカクした不気味な枝にする
+    makePixelTree(nextX, nextY, length * 0.7, angle - 0.4 - Math.random()*0.2, width * 0.6, depth - 1);
+    makePixelTree(nextX, nextY, length * 0.7, angle + 0.4 + Math.random()*0.2, width * 0.6, depth - 1);
 }
-// 画面の左と右に木を生やす（画面外にはみ出すくらいの大きめサイズ）
-makeTree(canvas.width * 0.05, canvas.height * 1.2, canvas.height * 0.4, 0.2, 12, 5); // 左の木
-makeTree(canvas.width * 0.95, canvas.height * 1.2, canvas.height * 0.45, -0.2, 14, 5); // 右の木
+// 左右の木を生成
+makePixelTree(canvas.width * 0.1, canvas.height, canvas.height * 0.3, 0.1, 10, 6);
+makePixelTree(canvas.width * 0.9, canvas.height, canvas.height * 0.35, -0.1, 12, 6);
 
+// 3. ドット絵の草をあらかじめ計算しておく
+const grassHeights = [];
+for(let x = 0; x < 2000; x++) {
+    // ランダムに高い草と低い草を作る
+    grassHeights.push(Math.random() > 0.8 ? Math.random() * 10 + 5 : Math.random() * 3);
+}
 
-// --- アニメーションループ（毎フレーム絵を描き直す） ---
+// 4. 流れる霧のデータ
+let fogOffset = 0;
+
+// --- アニメーションループ ---
 function drawBackground() {
-    // 【1】空のグラデーション（ダークな青緑）
+    // 【1】空のグラデーション（1枚目画像の青緑〜霧がかったエメラルド）
     const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    grad.addColorStop(0, '#0a1c29'); // 空の上の暗い色
-    grad.addColorStop(1, '#1b3e47'); // 地平線近くの青緑
+    grad.addColorStop(0, '#0d2332'); // 暗いティールブルー
+    grad.addColorStop(0.6, '#244e58'); // 中間
+    grad.addColorStop(1, '#628d7d'); // 下の方は明るい霧の色
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 【2】星をキラキラさせる
+    // 【2】星（四角いドット）
     stars.forEach(star => {
         star.alpha += star.speed;
-        ctx.fillStyle = `rgba(200, 255, 255, ${Math.abs(Math.sin(star.alpha))})`;
-        ctx.fillRect(star.x % canvas.width, star.y % canvas.height, 1, 1);
+        let a = Math.abs(Math.sin(star.alpha));
+        if (a > 0.5) { // チカチカ点滅させる
+            ctx.fillStyle = '#a8cabc'; // 少し緑がかった星
+            ctx.fillRect(Math.floor(star.x % canvas.width), Math.floor(star.y % canvas.height), 1, 1);
+        }
     });
 
-    // 【3】巨大な月（少し黄色っぽい白）
-    ctx.fillStyle = '#f7f4d2';
+    // 【3】巨大な月（黄緑がかったクリーム色）
+    const moonX = canvas.width * 0.65;
+    const moonY = canvas.height * 0.3;
+    const moonRadius = canvas.height * 0.25;
+
+    // 月のぼんやりした光（ドット感を出すため、グラデーションではなく階段状の円で表現）
+    ctx.fillStyle = 'rgba(235, 239, 193, 0.1)';
+    ctx.beginPath(); ctx.arc(moonX, moonY, moonRadius + 15, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(moonX, moonY, moonRadius + 5, 0, Math.PI*2); ctx.fill();
+
+    // 月の本体
+    ctx.fillStyle = '#ebefc1';
     ctx.beginPath();
-    ctx.arc(canvas.width * 0.6, canvas.height * 0.35, canvas.height * 0.25, 0, Math.PI * 2);
+    ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // 【4】不気味に流れる雲（暗い半透明）
-    ctx.fillStyle = 'rgba(20, 40, 50, 0.5)';
-    clouds.forEach(cloud => {
-        cloud.x -= cloud.speed; // 左へ流す
-        if (cloud.x < -cloud.width * 2) cloud.x = canvas.width + cloud.width; // はみ出たら右に戻す
-
-        ctx.beginPath();
-        ctx.ellipse(cloud.x, cloud.y, cloud.width, cloud.height, 0, 0, Math.PI * 2);
-        ctx.fill();
-    });
-
-    // 【5】奥の地面（丘のシルエット）
-    ctx.fillStyle = '#0f2026'; // 少しだけ明るい黒
-    ctx.beginPath();
-    ctx.moveTo(0, canvas.height);
-    for(let x = 0; x <= canvas.width; x += 5) {
-        // なだらかな丘
-        ctx.lineTo(x, canvas.height * 0.8 - Math.sin(x * 0.02) * 15);
+    // 【4】奥の霧（ゆっくり右から左へ流れる）
+    fogOffset += 0.2;
+    ctx.fillStyle = 'rgba(98, 141, 125, 0.4)'; // 霧の色
+    for (let x = 0; x < canvas.width; x += 4) {
+        let y = canvas.height * 0.75 + Math.sin((x + fogOffset) * 0.05) * 15;
+        ctx.fillRect(x, y, 4, canvas.height - y);
     }
-    ctx.lineTo(canvas.width, canvas.height);
-    ctx.fill();
 
-    // 【6】手前の地面と草（ほぼ真っ黒）
-    ctx.fillStyle = '#03080a';
-    ctx.beginPath();
-    ctx.moveTo(0, canvas.height);
-    for(let x = 0; x <= canvas.width; x += 2) {
-        // 複雑な波を混ぜて、ギザギザした草を表現
-        let grass = Math.sin(x * 0.2) * 3 + Math.sin(x * 0.05) * 5;
-        ctx.lineTo(x, canvas.height * 0.9 - Math.sin(x * 0.01) * 20 + grass);
+    // 【5】手前の地面と「ドットの草」（真っ黒に近い色）
+    ctx.fillStyle = '#061014';
+    let groundY = canvas.height * 0.85;
+    ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY); // 地面のベース
+
+    // 草を1ドットずつ描画してカクカクにする
+    for (let x = 0; x < canvas.width; x++) {
+        let height = grassHeights[(Math.floor(x + fogOffset)) % grassHeights.length];
+        ctx.fillRect(x, groundY - height, 1, height);
     }
-    ctx.lineTo(canvas.width, canvas.height);
-    ctx.fill();
 
-    // 【7】左右の枯れ木のシルエット
-    ctx.strokeStyle = '#03080a'; // 手前の地面と同じ真っ黒
-    ctx.lineCap = 'round'; // 枝の先を丸くする
+    // 【6】左右の枯れ木（線を四角いドットとして描画してカクカクさせる）
+    ctx.strokeStyle = '#061014';
+    ctx.lineCap = 'square'; // ←ここがポイント！枝の先を四角くしてドット感アップ
     treeBranches.forEach(b => {
-        ctx.lineWidth = b.width;
+        ctx.lineWidth = Math.max(1, Math.floor(b.width)); // 太さも整数にしてドットっぽく
         ctx.beginPath();
-        ctx.moveTo(b.x, b.y);
-        ctx.lineTo(b.x - Math.sin(b.angle) * b.length, b.y - Math.cos(b.angle) * b.length);
+        ctx.moveTo(Math.floor(b.x), Math.floor(b.y));
+        ctx.lineTo(Math.floor(b.x - Math.sin(b.angle) * b.length), Math.floor(b.y - Math.cos(b.angle) * b.length));
         ctx.stroke();
     });
 
-    // 次のフレームへ
     requestAnimationFrame(drawBackground);
 }
 
-// アニメーション開始！
 drawBackground();
