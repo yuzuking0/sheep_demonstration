@@ -3,9 +3,20 @@
    タイトル・戦闘画面で共用
 ════════════════════════ */
 
+/* 背景キャンバスを画面いっぱいに広げて、一番後ろに配置する */
+#bgCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -100; /* すべての要素の後ろに回す */
+  pointer-events: none; /* クリックの邪魔にならないようにする */
+}
+
 #bg {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, #0a0705, #1a1008 35%, #2a1e08 65%, #0d0e08);
+  background: transparent; /* キャンバス背景が透けて見えるようにする */
 }
 
 #bg-stars { position: absolute; inset: 0; }

@@ -773,6 +773,9 @@
 </head>
 <body>
 
+<!-- 背景キャンバス（全画面の一番後ろ） -->
+<canvas id="bgCanvas"></canvas>
+
 <!-- スワイプゾーン -->
 <div id="swipe-zone"></div>
 
@@ -1120,6 +1123,9 @@
     <button class="btn-gold" onclick="Game.retry()" style="clip-path:none;border-radius:6px">RETRY</button>
   </div>
 </div>
+
+<!-- 背景キャンバスアニメーション -->
+<script src="js/background.js"></script>
 
 <!-- JS（ESモジュール） -->
 <script type="module" src="js/main.js"></script>
