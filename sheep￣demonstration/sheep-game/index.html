@@ -308,24 +308,9 @@
 .start-btn:hover { background:linear-gradient(180deg,#fff8cc,var(--gold3),var(--gold2)); transform:scale(1.05); }
 @keyframes startPulse { from{box-shadow:0 4px 16px #c9962a44} to{box-shadow:0 4px 28px #c9962a88,0 0 40px #c9962a33} }
 
-/* タイトル背景・羊 */
-.sheep-walker { position:absolute; bottom:17%; animation:sheepWalk linear infinite; }
-@keyframes sheepWalk { from{transform:translateX(-120px)} to{transform:translateX(110vw)} }
-.sw { position:relative; width:52px; height:40px; }
-.sww { position:absolute; background:radial-gradient(circle at 35% 35%,#fff,#ddd); border-radius:50%; }
-.sww1{width:30px;height:26px;bottom:10px;left:8px}
-.sww2{width:18px;height:18px;bottom:22px;left:6px}
-.sww3{width:20px;height:20px;bottom:24px;left:18px}
-.sww4{width:16px;height:16px;bottom:22px;left:34px}
-.sw-face{position:absolute;bottom:14px;left:38px;width:14px;height:12px;background:#e8e0d0;border-radius:4px 5px 3px 3px;}
-.sw-eye{position:absolute;width:3px;height:3px;background:#1a0a00;border-radius:50%;bottom:20px;left:42px;}
-.sw-legs{position:absolute;bottom:0;left:10px;display:flex;gap:5px;}
-.sw-leg{width:5px;height:12px;background:#888;border-radius:0 0 3px 3px;transform-origin:top center;}
-.sw-leg:nth-child(1){animation:legSwing .6s ease-in-out infinite alternate;}
-.sw-leg:nth-child(2){animation:legSwing .6s ease-in-out infinite alternate-reverse;}
-.sw-leg:nth-child(3){animation:legSwing .6s ease-in-out infinite alternate-reverse;}
-.sw-leg:nth-child(4){animation:legSwing .6s ease-in-out infinite alternate;}
-@keyframes legSwing{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+/* タイトル背景・羊（キャンバスと同期したシルエット） */
+/* CSS羊は非表示にして、キャンバス側の羊シルエットのみ使う */
+.sheep-walker { display: none; }
 
 /* ════════════════════════
    ショップ画面（コンテナ）
