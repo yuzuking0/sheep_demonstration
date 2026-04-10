@@ -52,6 +52,7 @@ export const ENEMIES = {
 
 // ステージ定義（順番に進む）
 export const STAGES = [
+  { enemy: 'BAT'   },
   { enemy: 'SLIME' },   // Stage 1
   { enemy: 'WOLF'  },   // Stage 2
   { enemy: 'BOSS'  },   // Stage 3（ボス）
