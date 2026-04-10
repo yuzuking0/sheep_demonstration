@@ -28,6 +28,13 @@ export const ENEMIES = {
     attacks: [5, 5, 7],
   },
 
+  BAT: {
+    id:      'bat',
+    name:    'コウモリ',
+    maxHp:   40,
+    attacks: [3, 3, 5, 10]
+  },
+
   ELITE_WOLF: {
     id:      'elite_wolf',
     name:    '禍狼',
