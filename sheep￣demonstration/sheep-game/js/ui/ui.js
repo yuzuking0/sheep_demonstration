@@ -203,15 +203,26 @@ export function applyFocus() {
  * 敵ダメージエフェクト
  */
 export function showEnemyHitEffect(damage) {
-    // 狼をフラッシュ
-  triggerAnimation(document.getElementById('wolf'), 'hit', 350);
+    // 現在表示中の敵にhitアニメーション
+    const s = getState();
+    const enemyKey = s?.enemy?.id?.toUpperCase();
+    if (enemyKey === 'BAT') {
+        // スプライトのhurtアニメーションに切り替え
+        const sprite = document.querySelector('#bat .bat-sprite');
+        if (sprite) {
+            sprite.classList.add('hurt');
+            setTimeout(() => sprite.classList.remove('hurt'), 520);
+        }
+    } else {
+        triggerAnimation(document.getElementById('wolf'), 'hit', 350);
+    }
     // 赤い光
-  const flash = document.createElement('div');
+    const flash = document.createElement('div');
     flash.className = 'enemy-flash';
     document.getElementById('enemy-area')?.appendChild(flash);
     setTimeout(() => flash.remove(), 350);
     // ダメージ数字
-  spawnDamageNumber(damage, 'enemy');
+    spawnDamageNumber(damage, 'enemy');
 }
 
 /**
@@ -331,6 +342,7 @@ function updateEnemyVisuals(s) {
     if (!s.enemy) return;
     const enemyKey = s.enemy.id.toUpperCase();
     const visualIds = {
+        'BAT':        'bat',
         'SLIME':      'slime',
         'WOLF':       'wolf',
         'ELITE_WOLF': 'wolf',  // エリートは狼ビジュアルを流用
