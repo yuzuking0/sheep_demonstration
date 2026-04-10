@@ -63,6 +63,9 @@ export function initState() {
     enemy:     null,   // マップのノード選択時にセットされる
     turnIdx:   0,
     gameOver:  false,
+
+    playerPoison: 0,
+
     // マップ（main.js 側でセット）
     map:       null,
     // ショップ
@@ -87,6 +90,8 @@ export function resetForNextBattle(enemyKey) {
   state.turn     = 1;
   state.turnIdx  = 0;
   state.gameOver = false;
+
+  state.playerPoison = 0;
   // パッシブは維持
 
   state.enemy = getEnemyForKey(enemyKey);

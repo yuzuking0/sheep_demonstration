@@ -47,6 +47,12 @@ function updateStats(s) {
     setText('intent-dmg', getNextEnemyAttack());
     setText('deck-count', s.deck.length);
     setText('discard-count', s.discard.length);
+
+    const poisonEl = document.getElementById('poison-status');
+    if (poisonEl) {
+        // s.playerPoison が 0 より大きいときだけ表示する
+        poisonEl.textContent = s.playerPoison > 0 ? `☠ ${s.playerPoison}` : '';
+    }
 }
 
 // ════════════════════════
@@ -203,6 +209,14 @@ export function applyFocus() {
  * 敵ダメージエフェクト
  */
 export function showEnemyHitEffect(damage) {
+    const s = getState();
+    const enemyKey = s.enemy.id.toLowerCase();
+    
+    // IDが 'slime' か 'wolf' か 'boss' かを自動判別して光らせる
+    const visualId = (enemyKey === 'elite_wolf') ? 'wolf' : enemyKey;
+    triggerAnimation(document.getElementById(visualId), 'hit', 350);
+
+    
     // 狼をフラッシュ
   triggerAnimation(document.getElementById('wolf'), 'hit', 350);
     // 赤い光

@@ -25,7 +25,11 @@ export const ENEMIES = {
     id:      'slime',
     name:    'スライム',
     maxHp:   30,
-    attacks: [5, 5, 7],
+    attacks: [
+      { damage: 5, effect: null },
+      { damage: 5, effect: 'poison' }, // 2回目の攻撃に毒を付ける
+      { damage: 7, effect: 'poison' }, // 3回目の攻撃に毒を付ける
+    ],
   },
 
   ELITE_WOLF: {
