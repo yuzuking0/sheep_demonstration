@@ -170,6 +170,76 @@
   50%{ filter:brightness(2) sepia(.5) hue-rotate(80deg) drop-shadow(0 0 12px #44ff88); }
 }
 
+/* コウモリ */
+#bat {
+  position: relative; width: 90px; height: 80px;
+  animation: batFlying 1.2s case-in-out infinite alternate;
+  filter: drop-shadow(0 5px 8px #00000099);
+}
+@keyframes batFlying {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-10px); }
+}
+#bat::after {
+  content:''; position:absolute; bottom:-6px; left:50%;
+  transform:translateX(-50%); width:70px; height:12px;
+  background:rgba(0,0,0,.35); border-radius:50%; filter:blur(4px);
+}
+
+/* 体 */
+.bat-body {
+  position:absolute; bottom:30px; left:35px;
+  width:50px; height:60px;
+  background:radial-gradient(circle at 40% 30%, #444, #000);
+  border-radius:50%;
+}
+
+/* 羽 */
+.bat-wing {
+  position:absolute;
+  width:50px; height:40px;
+  background: #111;
+  top:25px;
+  border-radius:50%;
+}
+
+/*  左右の動き */
+.bw1 {
+  left: -10px;
+  transform-origin:right center;
+  animation: wingFlap .4s ease-in-out infinite alternate;
+}
+.bw2 {
+  right: -10px;
+  transform-origin: left center;
+  animation: wingFlap .4s ease-in-out infinite alternate-reverse;
+}
+
+/* 羽を羽ばたかせる */
+@keyframes wingFlap {
+  from { transform: rotate(-20deg); }
+  to   { transform: rotate(20def); }
+}
+
+/* 目 */
+.bat-eye {
+  position:absolute;
+  width: 10px; height:10px;
+  background: #ff3333;
+  border-radius: 50%;
+  bottom: 50px;
+  box-shadow: 0 0 6px #ff0000;
+}
+.be1 { left:40px; }
+.be2 { left:60px; }
+
+/* ダメージ */
+#bat.hit { animation: batHit .35s ease forwards; }
+
+@keyframes batHit {
+  0%, 100%{ filter:drop-shadow(0 8px 20px #00000088); }
+  50%{ filter:brgithness(2) drop-shadow(0 0 12px #ff0000); }
+}
 /* ボス（巨大オオカミ） */
 #boss {
   position: relative; width: 160px; height: 175px;
