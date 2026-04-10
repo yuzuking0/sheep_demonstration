@@ -276,17 +276,26 @@
 #title-screen {
   position: absolute; inset: 0;
   display: none; flex-direction: column;
-  align-items: center; justify-content: flex-end;
-  padding-bottom: 60px;
-}
-#title-img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  align-items: center; justify-content: center; gap: 0;
 }
 
-.start-btn-wrap { position: relative; z-index: 1; }
+.title-frame { position:relative; padding:40px 60px 36px; text-align:center; }
+.title-frame::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg,#0e0b0788,#1a120888); border-top:1px solid #c9962a66; border-bottom:1px solid #c9962a66; }
+.main-title {
+  position:relative; z-index:1;
+  font-family: var(--font-display); font-weight:900;
+  font-size: clamp(24px,5vw,48px);
+  background: linear-gradient(180deg,var(--gold3),var(--gold2) 40%,var(--gold) 70%,#8a6010);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: 3px; line-height: 1.2; filter: drop-shadow(0 2px 12px #c9962a88);
+}
+.sub-title { position:relative; z-index:1; font-family:var(--font-title); font-size:11px; color:var(--parch2); letter-spacing:8px; opacity:.6; margin-top:6px; }
+.title-ornament { display:flex; align-items:center; justify-content:center; gap:12px; margin:10px 0; position:relative; z-index:1; }
+.orn-line  { height:1px; width:60px; background:linear-gradient(90deg,transparent,var(--gold)); }
+.orn-liner { height:1px; width:60px; background:linear-gradient(90deg,var(--gold),transparent); }
+.orn-gem   { width:6px; height:6px; background:var(--gold2); transform:rotate(45deg); box-shadow:0 0 6px var(--gold); }
+
+.start-btn-wrap { position:relative; z-index:1; margin-top:28px; }
 .start-btn {
   font-family: var(--font-title); font-size:14px; font-weight:700; letter-spacing:4px;
   color: var(--ink);
@@ -767,7 +776,29 @@
      タイトル画面
 ════════════════════════ -->
 <div id="title-screen">
-  <img id="title-img" src="images/title.png" alt="タイトル画面">
+  <!-- 羊が歩く -->
+  <div id="sheep-walkers"></div>
+
+  <!-- タイトル -->
+  <div class="title-frame">
+    <div class="title-ornament">
+      <div class="orn-line"></div>
+      <div class="orn-gem"></div>
+      <div class="orn-gem" style="opacity:.5;transform:rotate(45deg) scale(.7)"></div>
+      <div class="orn-gem"></div>
+      <div class="orn-liner"></div>
+    </div>
+    <div class="main-title">Violence of majority</div>
+    <div class="sub-title">ひつじの逆襲</div>
+    <div class="title-ornament" style="margin-top:10px">
+      <div class="orn-line"></div>
+      <div class="orn-gem" style="opacity:.5;transform:rotate(45deg) scale(.7)"></div>
+      <div class="orn-gem"></div>
+      <div class="orn-gem" style="opacity:.5;transform:rotate(45deg) scale(.7)"></div>
+      <div class="orn-liner"></div>
+    </div>
+  </div>
+
   <div class="start-btn-wrap">
     <button class="start-btn" onclick="Game.startGame()">GAME  START</button>
   </div>
