@@ -65,7 +65,6 @@ function pickEnemyKey(type, floorIdx) {
   if (type === 'boss')   return 'BOSS';
   return null;
 }
-
 // ────────────────────────────────────────────
 // マップ生成
 // ────────────────────────────────────────────
