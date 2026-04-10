@@ -32,6 +32,13 @@ export const ENEMIES = {
     ],
   },
 
+  BAT: {
+    id:      'bat',
+    name:    'コウモリ',
+    maxHp:   40,
+    attacks: [3, 3, 5, 10]
+  },
+
   ELITE_WOLF: {
     id:      'elite_wolf',
     name:    '禍狼',
@@ -49,6 +56,7 @@ export const ENEMIES = {
 
 // ステージ定義（順番に進む）
 export const STAGES = [
+  { enemy: 'BAT'   },
   { enemy: 'SLIME' },   // Stage 1
   { enemy: 'WOLF'  },   // Stage 2
   { enemy: 'BOSS'  },   // Stage 3（ボス）

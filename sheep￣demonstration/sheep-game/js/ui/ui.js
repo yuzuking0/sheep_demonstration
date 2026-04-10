@@ -220,12 +220,12 @@ export function showEnemyHitEffect(damage) {
     // 狼をフラッシュ
   triggerAnimation(document.getElementById('wolf'), 'hit', 350);
     // 赤い光
-  const flash = document.createElement('div');
+    const flash = document.createElement('div');
     flash.className = 'enemy-flash';
     document.getElementById('enemy-area')?.appendChild(flash);
     setTimeout(() => flash.remove(), 350);
     // ダメージ数字
-  spawnDamageNumber(damage, 'enemy');
+    spawnDamageNumber(damage, 'enemy');
 }
 
 /**
@@ -345,6 +345,7 @@ function updateEnemyVisuals(s) {
     if (!s.enemy) return;
     const enemyKey = s.enemy.id.toUpperCase();
     const visualIds = {
+        'BAT':        'bat',
         'SLIME':      'slime',
         'WOLF':       'wolf',
         'ELITE_WOLF': 'wolf',  // エリートは狼ビジュアルを流用
