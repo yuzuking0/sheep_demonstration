@@ -193,6 +193,26 @@ export const CARDS = [
     ],
   },
 
+  // ── 特殊・防御系 ──────────────────────────────────────────────
+
+{
+    id:     'wool_guard',
+    name:   'ウールの盾',
+    cost:   2,
+    type:   CARD_TYPES.BREED,
+    rarity: 'uncommon',
+    emoji:  '🛡️',
+    desc:   '次の敵の攻撃を <strong>無効化</strong> する',
+    effect: () => [
+      {
+        type: 'addPassive',
+        passive: {
+          name: 'シールド',
+          isShield: true // ★ここが超重要！
+        },
+      },
+    ],
+  },
 ];
 
 /**
