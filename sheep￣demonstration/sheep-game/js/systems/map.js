@@ -53,7 +53,14 @@ const FLOOR_DISTRIBUTIONS = [
 // ────────────────────────────────────────────
 
 function pickEnemyKey(type, floorIdx) {
-  if (type === 'battle') return floorIdx < 3 ? 'SLIME' : 'WOLF';
+  if (type === 'battle') {
+    // 初期フロアはスライム or コウモリにする
+    if (floorIdx < 3) {
+      return Math.random() < 0.5 ? 'SLIME' : 'BAT';
+    }
+    return 'WOLF';
+  }
+
   if (type === 'elite')  return 'ELITE_WOLF';
   if (type === 'boss')   return 'BOSS';
   return null;
